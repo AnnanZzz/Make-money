@@ -119,18 +119,18 @@ function render(){
     let total=0;
     list.forEach((item,idx)=>{
         total += Number(item.price||0);
-        const expDate=new Date(item.expireDate);
+        const expDate=new Date(item.expiredate);
         expDate.setHours(0,0,0,0);
         const isOver=expDate < now;
         const tr=document.createElement('tr');
         if(isOver) tr.className='expire';
         tr.innerHTML=`
             <td>${idx+1}</td>
-            <td>${item.sellDate||''}</td>
-            <td>${item.expireDate||''}</td>
+            <td>${item.selldate||''}</td>
+            <td>${item.expiredate||''}</td>
             <td>${item.price||0}</td>
             <td>${isOver?'⚠️已过期':'✅正常'}</td>
-            <td>${item.buyerEmail||''}</td>
+            <td>${item.buyeremail||''}</td>
             <td><button class="btn-del" onclick="del(${item.id})">删除</button></td>
         `;
         tableBody.appendChild(tr);
@@ -145,7 +145,14 @@ async function addRecord(){
     const price=document.getElementById('price').value;
     const buyerEmail=document.getElementById('buyerEmail').value.trim();
     if(!sellDate||!expireDate){alert('请填写售卖日期与截止日期');return;}
-    const {error}=await sbClient.from('records').insert([{sellDate,expireDate,price:Number(price),buyerEmail}]);
+    const {error}=await sbClient.from('records').insert([
+        {
+            selldate:sellDate,
+            expiredate:expireDate,
+            price:Number(price),
+            buyeremail:buyerEmail
+        }
+    ]);
     if(error) console.error("新增错误",error);
     document.getElementById('sellDate').value='';
     document.getElementById('expireDate').value='';
@@ -163,10 +170,10 @@ function exportExcel(){
     let csv="序号,售卖日期,截止日期,售价,状态,买家邮箱\n";
     const now=new Date();now.setHours(0,0,0,0);
     list.forEach((item,idx)=>{
-        const expDate=new Date(item.expireDate);
+        const expDate=new Date(item.expiredate);
         expDate.setHours(0,0,0,0);
         const st=expDate<now?"已过期":"正常";
-        csv += `${idx+1},${item.sellDate},${item.expireDate},${item.price},${st},"${item.buyerEmail||''}"\n`;
+        csv += `${idx+1},${item.selldate},${item.expiredate},${item.price},${st},"${item.buyeremail||''}"\n`;
     })
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
     const a=document.createElement('a');
