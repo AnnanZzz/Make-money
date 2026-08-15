@@ -57,8 +57,8 @@ h2{color:#0f766e;margin-top:0}
         </div>
     </div>
     <div class="row">
-        <button onclick="addRecord()">新增记录</button>
-        <button class="btn-export" onclick="exportExcel()">导出备份(CSV)</button>
+        <button id="btnAdd">新增记录</button>
+        <button id="btnExport" class="btn-export">导出备份(CSV)</button>
     </div>
 </div>
 
@@ -96,6 +96,15 @@ const tableBody = document.getElementById('tableBody');
 const countText = document.getElementById('countText');
 const sumText = document.getElementById('sumText');
 
+const sellDateEl = document.getElementById('sellDate');
+const expireDateEl = document.getElementById('expireDate');
+const priceEl = document.getElementById('price');
+const buyerEmailEl = document.getElementById('buyerEmail');
+
+// 绑定按钮事件，不再用onclick
+document.getElementById('btnAdd').addEventListener('click',addRecord);
+document.getElementById('btnExport').addEventListener('click',exportExcel);
+
 function subscribeDB(){
     sbClient.channel('table-db')
     .on('postgres_changes',{event:'*',schema:'public',table:'records'},()=>{loadData()})
@@ -103,6 +112,7 @@ function subscribeDB(){
 }
 
 async function loadData(){
+    console.log("开始读取数据");
     const {data,error}=await sbClient.from('records').select('*').order('id',{asc:true});
     if(error){
         console.error("读取错误：",error);
@@ -131,33 +141,49 @@ function render(){
             <td>${item.price||0}</td>
             <td>${isOver?'⚠️已过期':'✅正常'}</td>
             <td>${item.buyeremail||''}</td>
-            <td><button class="btn-del" onclick="del(${item.id})">删除</button></td>
+            <td><button class="btn-del" data-id="${item.id}">删除</button></td>
         `;
         tableBody.appendChild(tr);
+    })
+    //绑定删除按钮事件
+    document.querySelectorAll('.btn-del').forEach(btn=>{
+        btn.onclick=()=>{
+            const id=Number(btn.dataset.id);
+            del(id);
+        }
     })
     countText.innerText=list.length;
     sumText.innerText=total.toFixed(2);
 }
 
 async function addRecord(){
-    const sellDate=document.getElementById('sellDate').value.trim();
-    const expireDate=document.getElementById('expireDate').value.trim();
-    const price=document.getElementById('price').value;
-    const buyerEmail=document.getElementById('buyerEmail').value.trim();
-    if(!sellDate||!expireDate){alert('请填写售卖日期与截止日期');return;}
-    const {error}=await sbClient.from('records').insert([
-        {
+    console.log("点击新增，进入函数");
+    const sellDate=sellDateEl.value.trim();
+    const expireDate=expireDateEl.value.trim();
+    const price=priceEl.value;
+    const buyerEmail=buyerEmailEl.value.trim();
+    if(!sellDate||!expireDate){
+        alert('请填写售卖日期与截止日期');
+        return;
+    }
+    const payload={
             selldate:sellDate,
             expiredate:expireDate,
             price:Number(price),
             buyeremail:buyerEmail
-        }
-    ]);
-    if(error) console.error("新增错误",error);
-    document.getElementById('sellDate').value='';
-    document.getElementById('expireDate').value='';
-    document.getElementById('price').value='';
-    document.getElementById('buyerEmail').value='';
+    };
+    console.log("提交数据",payload);
+    const {error}=await sbClient.from('records').insert([payload]);
+    if(error) {
+        console.error("新增错误",error);
+        alert("新增失败："+JSON.stringify(error));
+    }else{
+        alert("新增成功");
+    }
+    sellDateEl.value='';
+    expireDateEl.value='';
+    priceEl.value='';
+    buyerEmailEl.value='';
 }
 
 async function del(id){
@@ -183,6 +209,7 @@ function exportExcel(){
 }
 
 (async ()=>{
+    console.log("页面初始化");
     await loadData();
     subscribeDB();
 })();
