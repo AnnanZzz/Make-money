@@ -1,0 +1,200 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>挣钱上三亚</title>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;font-family:system-ui}
+body{
+    margin:0;
+    min-height:100vh;
+    background:
+        linear-gradient(rgba(255,255,255,.62),rgba(255,255,255,.62)),
+        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center center no-repeat;
+    background-size:cover;
+    background-attachment:fixed;
+}
+.container{max-width:1100px;margin:20px auto;padding:16px}
+.form-box{background:#f7f8fa;padding:20px;border-radius:10px;margin-bottom:20px}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.item{display:flex;flex-direction:column;gap:4px}
+input,select{padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:14px}
+button{padding:9px 16px;border:none;border-radius:6px;background:#2563eb;color:white;cursor:pointer}
+.del-btn{background:#dc2626}
+.export{background:#059669}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #ddd;padding:10px;text-align:left;font-size:14px}
+th{background:#eef2ff}
+.expire{background:#ffdddd !important;}
+.summary-row td{background:#fef3c7;font-weight:bold;font-size:15px}
+.summary-row .total-price{color:#dc2626}
+h2{color:#0f766e}
+.tip-bar{background:#dbeafe;padding:10px;border-radius:8px;margin-bottom:16px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>挣钱上三亚</h2>
+<div class="tip-bar">
+🔗微信分享链接，所有人点开直接编辑，无需登录注册，数据云端实时同步
+</div>
+<div class="form-box">
+    <div class="row">
+        <div class="item">
+            <label>售卖日期</label>
+            <input type="date" id="sellDate">
+        </div>
+        <div class="item">
+            <label>截止日期</label>
+            <input type="date" id="expireDate">
+        </div>
+        <div class="item">
+            <label>售卖价格</label>
+            <input type="number" id="price" placeholder="元">
+        </div>
+        <div class="item">
+            <label>买家邮箱</label>
+            <input type="email" id="buyerEmail" placeholder="买家邮箱">
+        </div>
+    </div>
+    <div class="row">
+        <button onclick="addRecord()">新增记录</button>
+        <button class="export" onclick="exportExcel()">导出备份(Excel)</button>
+    </div>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th style="width:60px">序号</th>
+            <th>售卖日期</th>
+            <th>截止日期</th>
+            <th>售价(元)</th>
+            <th>状态</th>
+            <th>买家邮箱</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+    <tfoot>
+        <tr class="summary-row">
+            <td colspan="3" style="text-align:right">合计（共 <span id="totalCount">0</span> 条记录）</td>
+            <td class="total-price">¥ <span id="totalAmount">0.00</span></td>
+            <td colspan="3"></td>
+        </tr>
+    </tfoot>
+</div>
+
+<script>
+const SUPABASE_URL = "https://fhbqgieahzkdonknkotg.supabase.co";
+const SUPABASE_ANON_KEY = "fhbqgieahzkdonknkotg";
+
+const { createClient } = supabase;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let list = [];
+
+//实时监听数据表变化，多人同步
+function subscribeDB(){
+    supabase
+    .channel('table-db')
+    .on('postgres_changes', { event:'*', schema:'public', table:'records' }, ()=>{
+        loadData();
+    })
+    .subscribe();
+}
+
+//读取全部数据
+async function loadData(){
+    const {data,error}=await supabase.from('records').select('*').order('id',{asc:true});
+    if(error) console.error(error);
+    list = data || [];
+    render();
+}
+
+//渲染表格
+function render(){
+    const tb = document.getElementById("tableBody");
+    tb.innerHTML = "";
+    const now=new Date();
+    now.setHours(0,0,0,0);
+    list.forEach((item,idx)=>{
+        const exp = new Date(item.expireDate);
+        exp.setHours(0,0,0,0);
+        const isOver = exp < now;
+        const tr = document.createElement("tr");
+        if(isOver) tr.className="expire";
+        tr.innerHTML=`
+            <td>${idx+1}</td>
+            <td>${item.sellDate}</td>
+            <td>${item.expireDate}</td>
+            <td>${item.price}</td>
+            <td>${isOver?"⚠️已过期":"✅正常"}</td>
+            <td>${item.buyerEmail||""}</td>
+            <td><button class="del-btn" onclick="del('${item.id}')">删除</button></td>
+        `;
+        tb.appendChild(tr);
+    })
+    updateSummary();
+}
+
+//统计汇总
+function updateSummary(){
+    const total = list.reduce((sum,x)=>sum + (Number(x.price)||0), 0);
+    document.getElementById("totalCount").textContent = list.length;
+    document.getElementById("totalAmount").textContent = total.toFixed(2);
+}
+
+//新增记录，匿名访客直接写入数据库
+async function addRecord(){
+    const sellDate = document.getElementById("sellDate").value;
+    const expireDate = document.getElementById("expireDate").value;
+    const price = document.getElementById("price").value;
+    const buyerEmail = document.getElementById("buyerEmail").value.trim();
+    if(!sellDate||!expireDate){
+        alert("请填写售卖日期、截止日期");
+        return;
+    }
+    await supabase.from('records').insert([
+        {sellDate,expireDate,price:Number(price),buyerEmail}
+    ]);
+    //清空输入框
+    document.getElementById("sellDate").value="";
+    document.getElementById("expireDate").value="";
+    document.getElementById("price").value="";
+    document.getElementById("buyerEmail").value="";
+}
+
+//删除记录
+async function del(rowId){
+    if(!confirm("确定删除这条记录？")) return;
+    await supabase.from('records').delete().eq('id',rowId);
+}
+
+//导出csv
+function exportExcel(){
+    if(list.length===0){alert("暂无数据");return}
+    let t="序号,售卖日期,截止日期,售价,状态,买家邮箱\n";
+    const now=new Date();now.setHours(0,0,0,0);
+    list.forEach((x,idx)=>{
+        const exp=new Date(x.expireDate);exp.setHours(0,0,0,0);
+        const st=exp<now?"已过期":"正常";
+        t+=`${idx+1},${x.sellDate},${x.expireDate},${x.price},${st},"${x.buyerEmail||''}"\n`;
+    })
+    const total = list.reduce((sum,x)=>sum + (Number(x.price)||0),0);
+    t+=`\n合计,${list.length}条,,,¥${total.toFixed(2)},\n`;
+    const blob=new Blob([t],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="挣钱上三亚统计表.csv";
+    a.click();
+}
+
+//初始化
+loadData();
+subscribeDB();
+</script>
+</body>
+</html>
