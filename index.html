@@ -101,15 +101,8 @@ const expireDateEl = document.getElementById('expireDate');
 const priceEl = document.getElementById('price');
 const buyerEmailEl = document.getElementById('buyerEmail');
 
-// 绑定按钮事件，不再用onclick
 document.getElementById('btnAdd').addEventListener('click',addRecord);
 document.getElementById('btnExport').addEventListener('click',exportExcel);
-
-function subscribeDB(){
-    sbClient.channel('table-db')
-    .on('postgres_changes',{event:'*',schema:'public',table:'records'},()=>{loadData()})
-    .subscribe();
-}
 
 async function loadData(){
     console.log("开始读取数据");
@@ -145,7 +138,6 @@ function render(){
         `;
         tableBody.appendChild(tr);
     })
-    //绑定删除按钮事件
     document.querySelectorAll('.btn-del').forEach(btn=>{
         btn.onclick=()=>{
             const id=Number(btn.dataset.id);
@@ -179,6 +171,7 @@ async function addRecord(){
         alert("新增失败："+JSON.stringify(error));
     }else{
         alert("新增成功");
+        await loadData(); //新增完成立刻刷新列表
     }
     sellDateEl.value='';
     expireDateEl.value='';
@@ -188,7 +181,13 @@ async function addRecord(){
 
 async function del(id){
     if(!confirm('确定删除这条记录吗？'))return;
-    await sbClient.from('records').delete().eq('id',id);
+    const {error}=await sbClient.from('records').delete().eq('id',id);
+    if(error){
+        console.error("删除错误",error);
+        alert("删除失败");
+    }else{
+        await loadData(); //删除完成立刻刷新列表
+    }
 }
 
 function exportExcel(){
@@ -211,7 +210,6 @@ function exportExcel(){
 (async ()=>{
     console.log("页面初始化");
     await loadData();
-    subscribeDB();
 })();
 </script>
 </body>
