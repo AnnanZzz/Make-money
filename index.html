@@ -88,22 +88,21 @@ h2{color:#0f766e;margin-top:0}
 const SUPABASE_URL = "https://fhbqgieahzkdonknkotg.supabase.co";
 const SUPABASE_ANON_KEY = "fhbqgieahzkdonknkotg";
 const { createClient } = supabase;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sbClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let list = [];
 const tableBody = document.getElementById('tableBody');
 const countText = document.getElementById('countText');
 const sumText = document.getElementById('sumText');
 
-//实时监听数据库
 function subscribeDB(){
-    supabase.channel('table-db')
+    sbClient.channel('table-db')
     .on('postgres_changes',{event:'*',schema:'public',table:'records'},()=>{loadData()})
     .subscribe();
 }
 
 async function loadData(){
-    const {data,error}=await supabase.from('records').select('*').order('id',{asc:true});
+    const {data,error}=await sbClient.from('records').select('*').order('id',{asc:true});
     if(error){console.error(error);return;}
     list=data||[];
     render();
@@ -142,7 +141,7 @@ async function addRecord(){
     const price=document.getElementById('price').value;
     const buyerEmail=document.getElementById('buyerEmail').value.trim();
     if(!sellDate||!expireDate){alert('请填写售卖日期与截止日期');return;}
-    await supabase.from('records').insert([{sellDate,expireDate,price:Number(price),buyerEmail}]);
+    await sbClient.from('records').insert([{sellDate,expireDate,price:Number(price),buyerEmail}]);
     document.getElementById('sellDate').value='';
     document.getElementById('expireDate').value='';
     document.getElementById('price').value='';
@@ -151,7 +150,7 @@ async function addRecord(){
 
 async function del(id){
     if(!confirm('确定删除这条记录吗？'))return;
-    await supabase.from('records').delete().eq('id',id);
+    await sbClient.from('records').delete().eq('id',id);
 }
 
 function exportExcel(){
@@ -171,7 +170,6 @@ function exportExcel(){
     a.click();
 }
 
-//页面初始化
 (async ()=>{
     await loadData();
     subscribeDB();
