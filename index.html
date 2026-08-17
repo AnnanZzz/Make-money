@@ -3,69 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#071b2b">
+<meta name="theme-color" content="#071418">
 
-<title>挣钱上三亚 · Sanya Sales Dashboard</title>
+<title>挣钱上三亚 · Sanya Sales</title>
 
-<!-- Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 /* =========================================================
-   01. 基础变量
+   基础
 ========================================================= */
 
-:root {
-    --bg-deep: #061923;
-    --bg-ocean: #0b4f67;
-    --bg-ocean-2: #0b7891;
+:root{
+    --bg:#071418;
+    --bg2:#0b2024;
 
-    --glass: rgba(255,255,255,.14);
-    --glass-strong: rgba(255,255,255,.20);
-    --glass-border: rgba(255,255,255,.25);
+    --card:rgba(11,30,34,.54);
+    --card-strong:rgba(10,26,30,.78);
+    --line:rgba(255,255,255,.10);
 
-    --text-main: #f8fdff;
-    --text-soft: rgba(240,252,255,.74);
-    --text-dark: #0f2833;
+    --text:#f7f4ec;
+    --muted:rgba(247,244,236,.62);
 
-    --cyan: #4de8e0;
-    --blue: #4eafff;
-    --green: #70e6b2;
-    --orange: #ffc56e;
-    --red: #ff7f89;
-    --purple: #a99cff;
+    --sand:#e7d4ad;
+    --sand-2:#f1e6ce;
 
-    --shadow:
-        0 24px 80px rgba(0,0,0,.22);
+    --aqua:#78d7cf;
+    --green:#8ad7ad;
+    --amber:#efc982;
+    --red:#ee9797;
 
-    --radius-xl: 28px;
-    --radius-lg: 22px;
-    --radius-md: 16px;
-    --radius-sm: 11px;
+    --shadow:0 24px 70px rgba(0,0,0,.28);
 
-    --transition:
-        .28s cubic-bezier(.2,.8,.2,1);
+    --r1:28px;
+    --r2:20px;
+    --r3:14px;
 }
 
-
-/* =========================================================
-   02. Reset
-========================================================= */
-
-* {
-    box-sizing: border-box;
+*{
+    box-sizing:border-box;
 }
 
-html {
-    scroll-behavior: smooth;
+html{
+    scroll-behavior:smooth;
 }
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    overflow-x: hidden;
+body{
+    margin:0;
 
-    color: var(--text-main);
+    min-height:100vh;
+
+    background:
+        linear-gradient(
+            180deg,
+            #061216 0%,
+            #092328 46%,
+            #0a3338 100%
+        );
+
+    color:var(--text);
 
     font-family:
         Inter,
@@ -74,1350 +70,1111 @@ body {
         "Microsoft YaHei",
         system-ui,
         -apple-system,
-        BlinkMacSystemFont,
         sans-serif;
+
+    overflow-x:hidden;
+}
+
+
+/* =========================================================
+   动态背景
+========================================================= */
+
+#oceanCanvas{
+    position:fixed;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    z-index:-10;
+}
+
+.scene-overlay{
+    position:fixed;
+    inset:0;
+
+    z-index:-9;
+
+    pointer-events:none;
 
     background:
         linear-gradient(
             180deg,
-            #072535 0%,
-            #0a5970 38%,
-            #10879c 72%,
-            #70c8ce 100%
+            rgba(2,10,13,.18),
+            rgba(3,18,22,.08) 40%,
+            rgba(3,15,18,.35)
         );
-
-    transition:
-        background .5s ease,
-        color .5s ease;
 }
 
 
-/* =========================================================
-   03. 动态海景背景
-========================================================= */
+/* 太阳 */
 
-.ocean-scene {
-    position: fixed;
-    inset: 0;
-    z-index: -20;
-    overflow: hidden;
-    pointer-events: none;
-}
+.sun{
+    position:fixed;
 
+    width:440px;
+    height:440px;
 
-/* 天空光晕 */
+    right:-80px;
+    top:-130px;
 
-.sun-glow {
-    position: absolute;
+    z-index:-8;
 
-    width: 650px;
-    height: 650px;
-
-    right: -130px;
-    top: -180px;
-
-    border-radius: 50%;
+    border-radius:50%;
 
     background:
         radial-gradient(
             circle,
-            rgba(255,248,190,.42) 0%,
-            rgba(255,225,130,.13) 30%,
+            rgba(252,226,170,.27) 0%,
+            rgba(236,193,118,.11) 38%,
+            transparent 70%
+        );
+
+    filter:blur(8px);
+
+    animation:sunBreath 8s ease-in-out infinite alternate;
+
+    pointer-events:none;
+}
+
+@keyframes sunBreath{
+    from{
+        transform:scale(.92);
+        opacity:.76;
+    }
+
+    to{
+        transform:scale(1.08);
+        opacity:1;
+    }
+}
+
+
+/* 海面光带 */
+
+.reflection{
+    position:fixed;
+
+    left:50%;
+    bottom:-15vh;
+
+    width:70vw;
+    height:80vh;
+
+    z-index:-8;
+
+    transform:
+        translateX(-50%)
+        perspective(500px)
+        rotateX(68deg);
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(231,212,173,.20),
+            rgba(231,212,173,.06) 36%,
             transparent 67%
         );
 
-    filter: blur(5px);
+    filter:blur(14px);
 
-    animation:
-        sunPulse 8s ease-in-out infinite alternate;
+    animation:reflectionMove 7s ease-in-out infinite alternate;
+
+    pointer-events:none;
 }
 
-@keyframes sunPulse {
-    from {
-        transform: scale(.94);
-        opacity: .78;
+@keyframes reflectionMove{
+    from{
+        transform:
+            translateX(-53%)
+            perspective(500px)
+            rotateX(68deg)
+            scaleX(.90);
     }
 
-    to {
-        transform: scale(1.08);
-        opacity: 1;
-    }
-}
-
-
-/* 海面高光 */
-
-.sea-light {
-    position: absolute;
-
-    width: 120vw;
-    height: 55vh;
-
-    left: -10vw;
-    top: 40vh;
-
-    background:
-        radial-gradient(
-            ellipse at center,
-            rgba(190,251,255,.25),
-            transparent 58%
-        );
-
-    filter: blur(35px);
-
-    animation:
-        seaGlow 10s ease-in-out infinite alternate;
-}
-
-@keyframes seaGlow {
-    from {
-        transform: translateX(-3%) scaleX(.96);
-    }
-
-    to {
-        transform: translateX(3%) scaleX(1.04);
-    }
-}
-
-
-/* 水面细纹 */
-
-.ripple {
-    position: absolute;
-    inset: 42% -20% auto -20%;
-
-    height: 45%;
-
-    opacity: .32;
-
-    background:
-        repeating-radial-gradient(
-            ellipse at 50% 0%,
-            transparent 0 16px,
-            rgba(255,255,255,.14) 17px 18px,
-            transparent 19px 34px
-        );
-
-    transform:
-        perspective(800px)
-        rotateX(64deg);
-
-    animation:
-        rippleMove 13s linear infinite;
-}
-
-@keyframes rippleMove {
-    from {
-        background-position: 0 0;
-    }
-
-    to {
-        background-position: 120px 55px;
-    }
-}
-
-
-/* 光点 */
-
-.sparkles {
-    position: absolute;
-    inset: 0;
-
-    background-image:
-        radial-gradient(
-            circle,
-            rgba(255,255,255,.42) 0 1px,
-            transparent 1.5px
-        );
-
-    background-size: 42px 42px;
-
-    opacity: .16;
-
-    animation:
-        sparkleDrift 18s linear infinite;
-}
-
-@keyframes sparkleDrift {
-    from {
-        transform: translateY(0);
-    }
-
-    to {
-        transform: translateY(-42px);
+    to{
+        transform:
+            translateX(-47%)
+            perspective(500px)
+            rotateX(68deg)
+            scaleX(1.08);
     }
 }
 
 
 /* =========================================================
-   04. 动态波浪
+   椰树
 ========================================================= */
 
-.wave {
-    position: absolute;
+.palm{
+    position:fixed;
 
-    left: -25%;
-    bottom: -90px;
+    bottom:-45px;
 
-    width: 150%;
-    height: 310px;
+    width:310px;
+    height:470px;
 
-    border-radius: 46% 54% 0 0;
+    z-index:-6;
 
-    transform-origin: center bottom;
-}
-
-.wave-1 {
-    bottom: -90px;
-
-    background:
-        rgba(228,255,255,.25);
-
-    animation:
-        waveOne 9s ease-in-out infinite alternate;
-}
-
-.wave-2 {
-    bottom: -125px;
-
-    background:
-        rgba(14,106,130,.46);
-
-    animation:
-        waveTwo 12s ease-in-out infinite alternate;
-}
-
-.wave-3 {
-    bottom: -165px;
-
-    background:
-        rgba(4,48,67,.58);
-
-    animation:
-        waveThree 16s ease-in-out infinite alternate;
-}
-
-@keyframes waveOne {
-    from {
-        transform:
-            translateX(-3%)
-            rotate(-1deg)
-            scaleY(.92);
-    }
-
-    to {
-        transform:
-            translateX(4%)
-            rotate(1deg)
-            scaleY(1.08);
-    }
-}
-
-@keyframes waveTwo {
-    from {
-        transform:
-            translateX(5%)
-            rotate(1.2deg);
-    }
-
-    to {
-        transform:
-            translateX(-4%)
-            rotate(-1.2deg);
-    }
-}
-
-@keyframes waveThree {
-    from {
-        transform:
-            translateX(-2%)
-            scaleX(.98);
-    }
-
-    to {
-        transform:
-            translateX(3%)
-            scaleX(1.04);
-    }
-}
-
-
-/* =========================================================
-   05. 椰子树 SVG
-========================================================= */
-
-.palm {
-    position: absolute;
-
-    bottom: 55px;
-
-    width: 250px;
-    height: 360px;
-
-    opacity: .48;
+    opacity:.32;
 
     filter:
         drop-shadow(
-            0 18px 35px rgba(0,0,0,.22)
+            0 30px 60px rgba(0,0,0,.35)
         );
 
-    transform-origin: bottom center;
+    transform-origin:bottom center;
+
+    pointer-events:none;
 }
 
-.palm svg {
-    width: 100%;
-    height: 100%;
-}
-
-.palm-left {
-    left: -45px;
+.palm-left{
+    left:-65px;
 
     animation:
-        palmLeft 6s ease-in-out infinite alternate;
+        palmSwingLeft
+        6s
+        ease-in-out
+        infinite
+        alternate;
 }
 
-.palm-right {
-    right: -55px;
+.palm-right{
+    right:-80px;
 
-    transform: scaleX(-1);
+    transform:scaleX(-1);
 
     animation:
-        palmRight 7s ease-in-out infinite alternate;
+        palmSwingRight
+        7.5s
+        ease-in-out
+        infinite
+        alternate;
 }
 
-@keyframes palmLeft {
-    from {
-        transform:
-            rotate(-2deg);
+@keyframes palmSwingLeft{
+    from{
+        transform:rotate(-1.7deg);
     }
 
-    to {
-        transform:
-            rotate(2.6deg);
+    to{
+        transform:rotate(2.2deg);
     }
 }
 
-@keyframes palmRight {
-    from {
+@keyframes palmSwingRight{
+    from{
         transform:
             scaleX(-1)
-            rotate(-2.5deg);
+            rotate(-1.4deg);
     }
 
-    to {
+    to{
         transform:
             scaleX(-1)
             rotate(2deg);
     }
 }
 
+.palm path{
+    fill:#031013;
+}
+
 
 /* =========================================================
-   06. 页面主体
+   主体
 ========================================================= */
 
-.app {
-    width: min(1460px, calc(100% - 36px));
+.app{
+    width:min(
+        1450px,
+        calc(100% - 38px)
+    );
 
-    margin: 0 auto;
+    margin:auto;
 
     padding:
-        32px 0
+        34px 0
         80px;
 
-    position: relative;
-    z-index: 10;
+    position:relative;
+    z-index:5;
 }
 
 
 /* =========================================================
-   07. 顶部 Hero
+   Hero
 ========================================================= */
 
-.hero {
-    display: flex;
+.hero{
+    display:flex;
 
-    justify-content: space-between;
-    align-items: center;
+    justify-content:space-between;
+    align-items:flex-end;
 
-    gap: 24px;
+    gap:24px;
 
-    margin-bottom: 25px;
-
-    animation:
-        fadeUp .75s ease both;
+    margin-bottom:26px;
 }
 
-.hero-brand {
-    min-width: 0;
+.hero-left{
+    max-width:760px;
 }
 
-.eyebrow {
-    display: inline-flex;
+.kicker{
+    display:flex;
 
-    align-items: center;
-    gap: 8px;
+    align-items:center;
 
-    padding:
-        7px 11px;
+    gap:9px;
 
-    border-radius: 999px;
+    margin-bottom:13px;
 
-    border:
-        1px solid rgba(255,255,255,.22);
+    font-size:11px;
 
-    background:
-        rgba(255,255,255,.10);
-
-    backdrop-filter:
-        blur(18px);
-
-    -webkit-backdrop-filter:
-        blur(18px);
-
-    font-size: 12px;
-    letter-spacing: .14em;
+    letter-spacing:.20em;
 
     color:
-        rgba(255,255,255,.78);
-
-    margin-bottom: 12px;
+        rgba(247,244,236,.55);
 }
 
-.eyebrow-dot {
-    width: 7px;
-    height: 7px;
+.kicker-dot{
+    width:7px;
+    height:7px;
 
-    border-radius: 50%;
+    border-radius:50%;
 
-    background: #76ffe0;
+    background:var(--aqua);
 
     box-shadow:
-        0 0 14px #76ffe0;
+        0 0 16px
+        rgba(120,215,207,.8);
 }
 
-.hero h1 {
-    margin: 0;
+h1{
+    margin:0;
 
     font-size:
         clamp(
-            34px,
-            5vw,
-            65px
+            44px,
+            7vw,
+            88px
         );
 
-    line-height: .98;
+    line-height:.9;
 
-    letter-spacing: -.05em;
+    letter-spacing:-.06em;
 
-    text-shadow:
-        0 8px 26px rgba(0,0,0,.14);
+    font-weight:650;
 }
 
-.hero-subtitle {
+.hero-sub{
     margin:
-        13px 0 0;
+        16px 0 0;
 
-    font-size:
-        clamp(
-            13px,
-            1.3vw,
-            16px
-        );
+    color:var(--muted);
 
-    color: var(--text-soft);
+    font-size:14px;
 
-    letter-spacing: .04em;
+    letter-spacing:.04em;
 }
 
-.hero-actions {
-    display: flex;
-    gap: 10px;
+.hero-actions{
+    display:flex;
+
+    gap:10px;
 }
 
 
 /* =========================================================
-   08. 通用玻璃效果
+   通用玻璃
 ========================================================= */
 
-.glass {
+.glass{
     background:
         linear-gradient(
             145deg,
-            rgba(255,255,255,.19),
-            rgba(255,255,255,.09)
+            rgba(11,30,34,.66),
+            rgba(8,25,29,.36)
         );
 
     border:
         1px solid
-        rgba(255,255,255,.24);
+        rgba(255,255,255,.10);
 
-    box-shadow:
-        var(--shadow);
+    box-shadow:var(--shadow);
 
     backdrop-filter:
-        blur(26px)
-        saturate(145%);
+        blur(28px)
+        saturate(120%);
 
     -webkit-backdrop-filter:
-        blur(26px)
-        saturate(145%);
+        blur(28px)
+        saturate(120%);
 }
 
 
 /* =========================================================
-   09. 顶部按钮
+   按钮
 ========================================================= */
 
-.icon-button {
-    width: 45px;
-    height: 45px;
+.icon-btn{
+    width:46px;
+    height:46px;
 
-    display: grid;
-    place-items: center;
+    border-radius:14px;
 
-    border: 1px solid
-        rgba(255,255,255,.23);
-
-    border-radius: 15px;
-
-    background:
+    border:
+        1px solid
         rgba(255,255,255,.12);
 
-    color: #fff;
+    background:
+        rgba(255,255,255,.055);
 
-    font-size: 18px;
+    color:var(--text);
 
-    cursor: pointer;
+    font-size:18px;
 
-    backdrop-filter:
-        blur(18px);
+    cursor:pointer;
 
-    transition: var(--transition);
+    transition:.25s ease;
+
+    backdrop-filter:blur(16px);
 }
 
-.icon-button:hover {
+.icon-btn:hover{
     transform:
-        translateY(-3px)
-        scale(1.03);
+        translateY(-3px);
 
     background:
-        rgba(255,255,255,.19);
+        rgba(255,255,255,.10);
 }
 
+.btn{
+    border:none;
 
-/* =========================================================
-   10. 统计卡片
-========================================================= */
+    min-height:44px;
 
-.stats {
-    display: grid;
+    padding:
+        0 17px;
 
-    grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+    border-radius:13px;
 
-    gap: 15px;
+    display:inline-flex;
 
-    margin-bottom: 18px;
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    transition:.25s ease;
 }
 
-.stat-card {
-    position: relative;
-
-    overflow: hidden;
-
-    min-height: 143px;
-
-    padding: 20px;
-
-    border-radius:
-        var(--radius-lg);
-
-    transition:
-        var(--transition);
-
-    animation:
-        fadeUp .7s ease both;
-}
-
-.stat-card:nth-child(2) {
-    animation-delay: .06s;
-}
-
-.stat-card:nth-child(3) {
-    animation-delay: .12s;
-}
-
-.stat-card:nth-child(4) {
-    animation-delay: .18s;
-}
-
-.stat-card:hover {
-    transform:
-        translateY(-6px);
-
-    border-color:
-        rgba(255,255,255,.38);
-}
-
-.stat-card::after {
-    content: "";
-
-    position: absolute;
-
-    width: 120px;
-    height: 120px;
-
-    right: -40px;
-    bottom: -50px;
-
-    border-radius: 50%;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(255,255,255,.18),
-            transparent 68%
-        );
-}
-
-.stat-label {
-    font-size: 12px;
-
-    color:
-        rgba(255,255,255,.68);
-
-    letter-spacing: .09em;
-}
-
-.stat-value {
-    margin-top: 11px;
-
-    font-size:
-        clamp(
-            25px,
-            3vw,
-            37px
-        );
-
-    font-weight: 700;
-
-    letter-spacing:
-        -.04em;
-
-    white-space: nowrap;
-}
-
-.stat-caption {
-    margin-top: 9px;
-
-    font-size: 12px;
-
-    color:
-        rgba(255,255,255,.55);
-}
-
-
-/* =========================================================
-   11. 主面板
-========================================================= */
-
-.main-panel {
-    padding: 21px;
-
-    border-radius:
-        var(--radius-xl);
-
-    animation:
-        fadeUp .8s .14s ease both;
-}
-
-.panel-header {
-    display: flex;
-
-    justify-content:
-        space-between;
-
-    align-items: center;
-
-    gap: 15px;
-
-    margin-bottom: 18px;
-}
-
-.panel-title {
-    display: flex;
-
-    align-items: center;
-
-    gap: 11px;
-}
-
-.panel-title-icon {
-    width: 38px;
-    height: 38px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 12px;
-
+.btn-primary{
     background:
         linear-gradient(
             135deg,
-            rgba(77,232,224,.32),
-            rgba(78,175,255,.25)
+            var(--sand-2),
+            var(--sand)
         );
 
-    border:
-        1px solid
-        rgba(255,255,255,.21);
-}
-
-.panel-title h2 {
-    margin: 0;
-
-    font-size: 18px;
-}
-
-.panel-title p {
-    margin:
-        3px 0 0;
-
-    color: var(--text-soft);
-
-    font-size: 12px;
-}
-
-
-/* =========================================================
-   12. 表单
-========================================================= */
-
-.form-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(6, minmax(135px,1fr));
-
-    gap: 12px;
-}
-
-.field {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 7px;
-}
-
-.field label {
-    font-size: 12px;
-
-    color:
-        rgba(255,255,255,.72);
-
-    padding-left: 3px;
-}
-
-.input,
-.select {
-    width: 100%;
-
-    min-height: 46px;
-
-    padding:
-        0 13px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.17);
-
-    border-radius: 13px;
-
-    outline: none;
-
-    background:
-        rgba(4,35,49,.20);
-
-    color: #fff;
-
-    font-size: 14px;
-
-    transition: var(--transition);
-
-    backdrop-filter:
-        blur(15px);
-}
-
-.input::placeholder {
-    color:
-        rgba(255,255,255,.38);
-}
-
-.input:focus,
-.select:focus {
-    border-color:
-        rgba(89,239,229,.68);
-
-    box-shadow:
-        0 0 0 4px
-        rgba(77,232,224,.09);
-
-    background:
-        rgba(6,49,65,.27);
-}
-
-.select option {
-    color: #172b34;
-
-    background: #fff;
-}
-
-.form-actions {
-    display: flex;
-
-    align-items: center;
-
-    flex-wrap: wrap;
-
-    gap: 10px;
-
-    margin-top: 16px;
-}
-
-
-/* =========================================================
-   13. 按钮
-========================================================= */
-
-.btn {
-    border: 0;
-
-    min-height: 43px;
-
-    padding:
-        0 16px;
-
-    border-radius: 13px;
-
-    display:
-        inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 8px;
-
-    cursor: pointer;
-
-    font-weight: 600;
-
-    font-size: 13px;
-
-    transition: var(--transition);
-
-    white-space: nowrap;
-}
-
-.btn:disabled {
-    opacity: .52;
-
-    cursor: wait;
-}
-
-.btn-primary {
-    color: #04333b;
-
-    background:
-        linear-gradient(
-            135deg,
-            #8dffe4,
-            #68d8ff
-        );
+    color:#1a2827;
 
     box-shadow:
         0 12px 30px
-        rgba(82,225,228,.18);
+        rgba(231,212,173,.12);
 }
 
-.btn-primary:hover {
+.btn-primary:hover{
     transform:
         translateY(-3px);
 
     box-shadow:
         0 18px 36px
-        rgba(82,225,228,.28);
+        rgba(231,212,173,.22);
 }
 
-.btn-secondary {
-    color: #fff;
+.btn-secondary{
+    color:var(--text);
 
     background:
-        rgba(255,255,255,.12);
+        rgba(255,255,255,.055);
 
     border:
         1px solid
-        rgba(255,255,255,.18);
+        rgba(255,255,255,.10);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover{
     background:
-        rgba(255,255,255,.18);
+        rgba(255,255,255,.10);
 
     transform:
         translateY(-2px);
 }
 
-.btn-danger {
-    color: #fff;
-
-    background:
-        rgba(255,102,114,.20);
-
-    border:
-        1px solid
-        rgba(255,130,139,.30);
-}
-
-.btn-danger:hover {
-    background:
-        rgba(255,94,106,.30);
+.btn:disabled{
+    opacity:.50;
+    cursor:wait;
 }
 
 
 /* =========================================================
-   14. 数据区域
+   统计卡片
 ========================================================= */
 
-.data-panel {
-    margin-top: 18px;
+.stats{
+    display:grid;
 
-    padding: 19px;
+    grid-template-columns:
+        1.6fr
+        1fr
+        1fr
+        1fr;
 
-    border-radius:
-        var(--radius-xl);
+    gap:13px;
 
-    animation:
-        fadeUp .85s .22s ease both;
+    margin-bottom:17px;
 }
 
-.data-toolbar {
-    display: flex;
+.stat{
+    min-height:150px;
 
-    justify-content:
-        space-between;
+    padding:21px;
 
-    align-items: center;
+    border-radius:var(--r2);
 
-    gap: 14px;
+    position:relative;
 
-    margin-bottom: 15px;
+    overflow:hidden;
+
+    transition:.28s ease;
 }
 
-.data-toolbar-left h3 {
-    margin: 0;
+.stat:hover{
+    transform:
+        translateY(-5px);
 
-    font-size: 17px;
+    border-color:
+        rgba(231,212,173,.20);
 }
 
-.data-toolbar-left p {
-    margin:
-        4px 0 0;
+.stat::after{
+    content:"";
 
-    color: var(--text-soft);
+    position:absolute;
 
-    font-size: 12px;
+    width:140px;
+    height:140px;
+
+    right:-55px;
+    bottom:-65px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(231,212,173,.11),
+            transparent 70%
+        );
 }
 
-.toolbar-controls {
-    display: flex;
+.stat-label{
+    color:
+        rgba(247,244,236,.48);
 
-    gap: 9px;
+    font-size:10px;
 
-    flex-wrap: wrap;
+    letter-spacing:.16em;
 }
 
-.search-wrap {
-    position: relative;
+.stat-value{
+    margin-top:15px;
+
+    font-size:
+        clamp(
+            26px,
+            3.5vw,
+            46px
+        );
+
+    font-weight:630;
+
+    letter-spacing:-.04em;
 }
 
-.search-input {
-    width: 235px;
+.stat-main .stat-value{
+    color:var(--sand-2);
+}
 
-    min-height: 41px;
+.stat-caption{
+    margin-top:8px;
 
-    padding:
-        0 14px 0 38px;
+    color:var(--muted);
+
+    font-size:12px;
+}
+
+
+/* =========================================================
+   面板
+========================================================= */
+
+.panel{
+    padding:22px;
+
+    border-radius:var(--r1);
+
+    margin-bottom:17px;
+}
+
+.panel-head{
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    gap:16px;
+
+    margin-bottom:19px;
+}
+
+.panel-title{
+    display:flex;
+
+    gap:12px;
+
+    align-items:center;
+}
+
+.panel-icon{
+    width:42px;
+    height:42px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:13px;
+
+    background:
+        rgba(231,212,173,.10);
 
     border:
         1px solid
-        rgba(255,255,255,.18);
+        rgba(231,212,173,.15);
 
-    border-radius: 13px;
+    color:var(--sand);
+}
+
+.panel-title h2,
+.panel-title h3{
+    margin:0;
+
+    font-size:17px;
+
+    font-weight:620;
+}
+
+.panel-title p{
+    margin:
+        4px 0 0;
+
+    font-size:11px;
+
+    color:var(--muted);
+}
+
+
+/* =========================================================
+   表单
+========================================================= */
+
+.form-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            6,
+            minmax(140px,1fr)
+        );
+
+    gap:11px;
+}
+
+.field{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:7px;
+}
+
+.field label{
+    padding-left:3px;
+
+    font-size:11px;
+
+    color:
+        rgba(247,244,236,.57);
+}
+
+.input,
+.select{
+    width:100%;
+
+    min-height:47px;
+
+    border-radius:13px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.095);
 
     background:
-        rgba(3,30,43,.18);
+        rgba(0,0,0,.13);
 
-    color: #fff;
+    padding:
+        0 13px;
 
-    outline: none;
+    outline:none;
+
+    color:var(--text);
+
+    font-size:13px;
+
+    transition:.22s ease;
 }
 
-.search-input::placeholder {
+.input::placeholder{
     color:
-        rgba(255,255,255,.40);
+        rgba(247,244,236,.28);
 }
 
-.search-icon {
-    position: absolute;
+.input:focus,
+.select:focus{
+    border-color:
+        rgba(231,212,173,.42);
 
-    left: 13px;
-    top: 50%;
+    box-shadow:
+        0 0 0 4px
+        rgba(231,212,173,.06);
+}
+
+.select option{
+    background:#102225;
+    color:#fff;
+}
+
+.form-actions{
+    display:flex;
+
+    gap:9px;
+
+    margin-top:16px;
+}
+
+
+/* =========================================================
+   工具栏
+========================================================= */
+
+.toolbar{
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    gap:14px;
+
+    margin-bottom:15px;
+}
+
+.toolbar-left h3{
+    margin:0;
+    font-size:17px;
+}
+
+.toolbar-left p{
+    margin:
+        4px 0 0;
+
+    font-size:11px;
+
+    color:var(--muted);
+}
+
+.toolbar-right{
+    display:flex;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+}
+
+.search-box{
+    position:relative;
+}
+
+.search-box span{
+    position:absolute;
+
+    left:13px;
+    top:50%;
 
     transform:
         translateY(-50%);
 
-    opacity: .55;
+    opacity:.38;
+}
+
+.search-input{
+    width:250px;
+
+    height:42px;
+
+    padding:
+        0 13px 0 38px;
+
+    border-radius:13px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.10);
+
+    background:
+        rgba(0,0,0,.12);
+
+    color:#fff;
+
+    outline:none;
+}
+
+.search-input::placeholder{
+    color:
+        rgba(255,255,255,.28);
 }
 
 
 /* =========================================================
-   15. Table
+   Table
 ========================================================= */
 
-.table-shell {
-    overflow-x: auto;
+.table-wrap{
+    overflow:auto;
 
-    border-radius: 18px;
+    border-radius:18px;
 
     border:
         1px solid
-        rgba(255,255,255,.13);
-
-    background:
-        rgba(5,34,46,.13);
+        rgba(255,255,255,.075);
 }
 
-table {
-    width: 100%;
+table{
+    width:100%;
 
-    min-width: 1110px;
+    min-width:1100px;
 
-    border-collapse: collapse;
+    border-collapse:collapse;
 }
 
-thead th {
-    position: sticky;
-
-    top: 0;
-
-    z-index: 2;
-
+th{
     padding:
         13px 12px;
 
-    text-align: left;
+    text-align:left;
 
-    font-size: 11px;
+    font-size:10px;
 
-    font-weight: 600;
+    letter-spacing:.10em;
 
-    letter-spacing: .06em;
+    font-weight:600;
 
     color:
-        rgba(255,255,255,.63);
+        rgba(247,244,236,.44);
 
     background:
-        rgba(4,36,49,.44);
+        rgba(4,18,21,.42);
 
-    backdrop-filter:
-        blur(20px);
+    position:sticky;
+
+    top:0;
+
+    z-index:2;
+
+    backdrop-filter:blur(14px);
 }
 
-tbody td {
+td{
     padding:
         14px 12px;
 
     border-top:
         1px solid
-        rgba(255,255,255,.085);
+        rgba(255,255,255,.06);
 
-    font-size: 13px;
+    font-size:12px;
 
-    vertical-align: middle;
+    color:
+        rgba(247,244,236,.84);
 }
 
-tbody tr {
-    transition:
-        background .2s ease,
-        transform .2s ease;
+tbody tr{
+    transition:.20s ease;
 }
 
-tbody tr:hover {
+tbody tr:hover{
     background:
-        rgba(255,255,255,.07);
+        rgba(255,255,255,.035);
 }
 
-.money {
-    font-weight: 700;
+.price{
+    color:var(--sand-2);
 
-    color: #a8ffdf;
+    font-weight:650;
 }
 
 
 /* =========================================================
-   16. 状态徽章
+   状态
 ========================================================= */
 
-.badge {
-    display:
-        inline-flex;
+.badge{
+    display:inline-flex;
 
-    align-items: center;
+    align-items:center;
 
-    gap: 6px;
+    gap:6px;
 
     padding:
         6px 9px;
 
-    border-radius: 999px;
+    border-radius:999px;
 
-    font-size: 11px;
-
-    font-weight: 600;
+    font-size:10px;
 
     border:
         1px solid transparent;
 }
 
-.badge::before {
-    content: "";
+.badge::before{
+    content:"";
 
-    width: 6px;
-    height: 6px;
+    width:6px;
+    height:6px;
 
-    border-radius: 50%;
+    border-radius:50%;
 }
 
-.badge-normal {
-    color: #baffdf;
+.badge-ok{
+    color:#b7ebce;
 
     background:
-        rgba(76,215,149,.13);
+        rgba(83,169,122,.09);
 
     border-color:
-        rgba(117,231,176,.24);
+        rgba(112,198,151,.14);
 }
 
-.badge-normal::before {
-    background: #6df2b2;
-
-    box-shadow:
-        0 0 10px #6df2b2;
+.badge-ok::before{
+    background:#79d3a0;
 }
 
-.badge-warning {
-    color: #ffe0a6;
+.badge-warning{
+    color:#f0d79f;
 
     background:
-        rgba(255,181,78,.13);
+        rgba(199,160,80,.09);
 
     border-color:
-        rgba(255,201,119,.24);
+        rgba(231,201,130,.15);
 }
 
-.badge-warning::before {
-    background: #ffc66d;
+.badge-warning::before{
+    background:#e7c373;
 }
 
-.badge-expired {
-    color: #ffbbc1;
+.badge-expired{
+    color:#eeb0b0;
 
     background:
-        rgba(255,92,108,.14);
+        rgba(189,89,89,.10);
 
     border-color:
-        rgba(255,128,140,.26);
+        rgba(224,126,126,.15);
 }
 
-.badge-expired::before {
-    background: #ff7a89;
+.badge-expired::before{
+    background:#e28a8a;
 }
 
-.badge-deleted {
+.badge-deleted{
     color:
-        rgba(255,255,255,.58);
+        rgba(247,244,236,.38);
 
     background:
-        rgba(255,255,255,.08);
+        rgba(255,255,255,.035);
 
     border-color:
-        rgba(255,255,255,.12);
+        rgba(255,255,255,.07);
 }
 
-.badge-deleted::before {
+.badge-deleted::before{
     background:
-        rgba(255,255,255,.48);
+        rgba(255,255,255,.30);
 }
 
 
 /* =========================================================
-   17. 行操作按钮
+   小按钮
 ========================================================= */
 
-.row-actions {
-    display: flex;
+.row-actions{
+    display:flex;
 
-    gap: 6px;
+    flex-wrap:wrap;
 
-    flex-wrap: wrap;
+    gap:5px;
 }
 
-.mini-btn {
+.small-btn{
+    padding:
+        6px 8px;
+
+    border-radius:8px;
+
     border:
         1px solid
-        rgba(255,255,255,.13);
-
-    border-radius: 9px;
-
-    padding:
-        6px 9px;
-
-    font-size: 11px;
-
-    cursor: pointer;
-
-    color: #fff;
-
-    background:
         rgba(255,255,255,.08);
 
-    transition: var(--transition);
-}
-
-.mini-btn:hover {
-    transform:
-        translateY(-2px);
-
     background:
-        rgba(255,255,255,.15);
-}
-
-.mini-edit {
-    color: #bcf7ff;
-}
-
-.mini-toggle {
-    color: #baffda;
-}
-
-.mini-delete {
-    color: #ffb7bd;
-}
-
-
-/* =========================================================
-   18. 空状态
-========================================================= */
-
-.empty-state {
-    padding:
-        60px 20px;
-
-    text-align: center;
+        rgba(255,255,255,.04);
 
     color:
-        rgba(255,255,255,.55);
+        rgba(255,255,255,.70);
+
+    cursor:pointer;
+
+    font-size:10px;
+
+    transition:.2s ease;
 }
 
-.empty-icon {
-    font-size: 34px;
+.small-btn:hover{
+    background:
+        rgba(255,255,255,.09);
 
-    margin-bottom: 10px;
+    color:#fff;
+}
+
+.small-btn.edit{
+    color:#b2e3dc;
+}
+
+.small-btn.delete{
+    color:#e7a6a6;
 }
 
 
 /* =========================================================
-   19. Modal
+   空状态
 ========================================================= */
 
-.modal-backdrop {
-    position: fixed;
+.empty{
+    display:none;
 
-    inset: 0;
+    text-align:center;
 
-    z-index: 200;
+    padding:
+        65px 20px;
 
-    display: none;
+    color:var(--muted);
+}
 
-    align-items: center;
+.empty-icon{
+    font-size:28px;
 
-    justify-content: center;
+    margin-bottom:10px;
+}
 
-    padding: 18px;
+
+/* =========================================================
+   Modal
+========================================================= */
+
+.modal-mask{
+    position:fixed;
+
+    inset:0;
+
+    z-index:100;
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
 
     background:
-        rgba(1,15,22,.62);
+        rgba(1,8,10,.68);
 
-    backdrop-filter:
-        blur(12px);
-
-    animation:
-        fadeIn .22s ease;
+    backdrop-filter:blur(13px);
 }
 
-.modal-backdrop.show {
-    display: flex;
+.modal-mask.show{
+    display:flex;
 }
 
-.modal {
+.modal{
     width:
         min(
-            720px,
+            700px,
             100%
         );
 
     max-height:
-        calc(100vh - 36px);
+        calc(100vh - 40px);
 
-    overflow-y: auto;
+    overflow:auto;
 
-    border-radius: 25px;
+    padding:22px;
 
-    padding: 23px;
+    border-radius:26px;
 
     background:
-        linear-gradient(
-            145deg,
-            rgba(10,61,76,.92),
-            rgba(5,35,48,.95)
-        );
+        rgba(8,27,31,.94);
 
     border:
         1px solid
-        rgba(255,255,255,.20);
+        rgba(255,255,255,.11);
 
     box-shadow:
         0 35px 90px
-        rgba(0,0,0,.40);
+        rgba(0,0,0,.46);
 
-    animation:
-        modalIn .28s ease;
+    animation:modalIn .25s ease;
 }
 
-@keyframes modalIn {
-    from {
-        opacity: 0;
+@keyframes modalIn{
+    from{
+        opacity:0;
 
         transform:
-            translateY(18px)
-            scale(.97);
+            translateY(14px)
+            scale(.98);
     }
 
-    to {
-        opacity: 1;
+    to{
+        opacity:1;
 
         transform:
             translateY(0)
@@ -1425,136 +1182,138 @@ tbody tr:hover {
     }
 }
 
-.modal-header {
-    display: flex;
+.modal-top{
+    display:flex;
 
-    align-items: center;
+    justify-content:space-between;
+    align-items:center;
 
-    justify-content:
-        space-between;
-
-    margin-bottom: 18px;
+    margin-bottom:18px;
 }
 
-.modal-header h3 {
-    margin: 0;
+.modal-top h3{
+    margin:0;
+
+    font-size:17px;
 }
 
-.close-btn {
-    width: 36px;
-    height: 36px;
+.modal-close{
+    width:36px;
+    height:36px;
 
-    border: 0;
+    border:none;
 
-    border-radius: 10px;
+    border-radius:10px;
 
     background:
-        rgba(255,255,255,.09);
+        rgba(255,255,255,.06);
 
-    color: #fff;
+    color:#fff;
 
-    cursor: pointer;
+    cursor:pointer;
 }
 
-.modal-grid {
-    display: grid;
+.modal-grid{
+    display:grid;
 
     grid-template-columns:
-        repeat(2, minmax(0,1fr));
+        repeat(
+            2,
+            minmax(0,1fr)
+        );
 
-    gap: 13px;
+    gap:12px;
 }
 
-.modal-actions {
-    display: flex;
+.modal-actions{
+    display:flex;
 
-    justify-content:
-        flex-end;
+    justify-content:flex-end;
 
-    gap: 9px;
+    gap:8px;
 
-    margin-top: 20px;
+    margin-top:19px;
 }
 
 
 /* =========================================================
-   20. Toast
+   Toast
 ========================================================= */
 
-.toast-stack {
-    position: fixed;
+.toast-box{
+    position:fixed;
 
-    right: 22px;
-    top: 22px;
+    right:20px;
+    top:20px;
 
-    z-index: 500;
+    z-index:200;
 
-    display: flex;
+    display:flex;
 
-    flex-direction: column;
+    flex-direction:column;
 
-    gap: 9px;
+    gap:8px;
 }
 
-.toast {
+.toast{
     width:
         min(
-            360px,
-            calc(100vw - 44px)
+            350px,
+            calc(100vw - 40px)
         );
 
     padding:
         13px 15px;
 
-    border-radius: 15px;
-
-    color: #fff;
+    border-radius:14px;
 
     background:
-        rgba(6,35,46,.88);
+        rgba(5,22,25,.90);
 
     border:
         1px solid
-        rgba(255,255,255,.19);
+        rgba(255,255,255,.10);
 
     box-shadow:
-        0 16px 44px
-        rgba(0,0,0,.27);
+        0 18px 50px
+        rgba(0,0,0,.35);
 
-    backdrop-filter:
-        blur(20px);
+    backdrop-filter:blur(18px);
+
+    font-size:12px;
 
     animation:
-        toastIn .28s ease;
-
-    font-size: 13px;
+        toastIn .25s ease;
 }
 
-.toast.success {
+.toast.success{
     border-left:
-        3px solid #6bf2b6;
+        3px solid
+        var(--green);
 }
 
-.toast.error {
+.toast.error{
     border-left:
-        3px solid #ff7c88;
+        3px solid
+        var(--red);
 }
 
-.toast.info {
+.toast.info{
     border-left:
-        3px solid #6fdcff;
+        3px solid
+        var(--aqua);
 }
 
-@keyframes toastIn {
-    from {
-        opacity: 0;
+@keyframes toastIn{
+    from{
+        opacity:0;
 
         transform:
-            translateX(25px);
+            translateX(18px);
     }
 
-    to {
-        opacity: 1;
+    to{
+        opacity:1;
 
         transform:
             translateX(0);
@@ -1563,915 +1322,729 @@ tbody tr:hover {
 
 
 /* =========================================================
-   21. Loader
+   Footer
 ========================================================= */
 
-.loader {
-    width: 18px;
-    height: 18px;
+.footer{
+    text-align:center;
 
-    border-radius: 50%;
-
-    border:
-        2px solid
-        rgba(255,255,255,.30);
-
-    border-top-color:
-        rgba(255,255,255,.95);
-
-    animation:
-        spin .7s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-
-/* =========================================================
-   22. 夜间模式
-========================================================= */
-
-body.night {
-    background:
-        linear-gradient(
-            180deg,
-            #02070f 0%,
-            #07192c 42%,
-            #0b3146 76%,
-            #104558 100%
-        );
-}
-
-body.night .sun-glow {
-    opacity: .14;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(155,206,255,.33),
-            transparent 68%
-        );
-}
-
-body.night .sparkles {
-    opacity: .34;
-}
-
-
-/* =========================================================
-   23. Footer
-========================================================= */
-
-.footer {
-    margin-top: 20px;
-
-    text-align: center;
+    margin-top:20px;
 
     color:
-        rgba(255,255,255,.42);
+        rgba(247,244,236,.28);
 
-    font-size: 11px;
+    font-size:10px;
 
-    letter-spacing: .07em;
+    letter-spacing:.15em;
 }
 
 
 /* =========================================================
-   24. 动画
+   响应式
 ========================================================= */
 
-@keyframes fadeUp {
-    from {
-        opacity: 0;
+@media(max-width:1100px){
 
-        transform:
-            translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-
-        transform:
-            translateY(0);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-
-/* =========================================================
-   25. 手机适配
-========================================================= */
-
-@media (max-width: 1100px) {
-
-    .form-grid {
+    .stats{
         grid-template-columns:
-            repeat(3, minmax(0,1fr));
-    }
-
-    .stats {
-        grid-template-columns:
-            repeat(2, minmax(0,1fr));
-    }
-
-}
-
-@media (max-width: 720px) {
-
-    .app {
-        width:
-            min(
-                100% - 22px,
-                1460px
+            repeat(
+                2,
+                minmax(0,1fr)
             );
-
-        padding-top: 20px;
     }
 
-    .hero {
-        align-items:
-            flex-start;
-    }
-
-    .hero-actions {
-        flex-direction: column;
-    }
-
-    .stats {
-        grid-template-columns: 1fr 1fr;
-
-        gap: 10px;
-    }
-
-    .stat-card {
-        min-height: 125px;
-
-        padding: 16px;
-    }
-
-    .form-grid {
+    .form-grid{
         grid-template-columns:
-            repeat(2, minmax(0,1fr));
-    }
-
-    .panel-header,
-    .data-toolbar {
-        align-items:
-            flex-start;
-
-        flex-direction: column;
-    }
-
-    .toolbar-controls {
-        width: 100%;
-    }
-
-    .search-wrap {
-        width: 100%;
-    }
-
-    .search-input {
-        width: 100%;
-    }
-
-    .modal-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .palm {
-        opacity: .20;
-
-        width: 180px;
-
-        height: 280px;
+            repeat(
+                3,
+                minmax(0,1fr)
+            );
     }
 
 }
 
-@media (max-width: 470px) {
 
-    .stats {
-        grid-template-columns: 1fr;
+@media(max-width:720px){
+
+    .app{
+        width:
+            calc(100% - 20px);
+
+        padding-top:20px;
     }
 
-    .form-grid {
-        grid-template-columns: 1fr;
+    .hero{
+        align-items:flex-start;
     }
 
-    .main-panel,
-    .data-panel {
-        padding: 14px;
-
-        border-radius: 20px;
+    h1{
+        font-size:47px;
     }
 
-    .hero h1 {
-        font-size: 39px;
+    .hero-sub{
+        max-width:240px;
+    }
+
+    .palm{
+        opacity:.16;
+
+        width:220px;
+        height:360px;
+    }
+
+    .form-grid{
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0,1fr)
+            );
+    }
+
+    .toolbar{
+        align-items:flex-start;
+
+        flex-direction:column;
+    }
+
+    .toolbar-right{
+        width:100%;
+    }
+
+    .search-box{
+        width:100%;
+    }
+
+    .search-input{
+        width:100%;
+    }
+
+}
+
+
+@media(max-width:470px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .modal-grid{
+        grid-template-columns:1fr;
+    }
+
+    .panel{
+        padding:15px;
+
+        border-radius:22px;
+    }
+
+    h1{
+        font-size:41px;
     }
 
 }
 </style>
 </head>
 
-
 <body>
 
 
 <!-- =======================================================
-     动态海景
+     动态背景
 ======================================================= -->
 
-<div class="ocean-scene">
+<canvas id="oceanCanvas"></canvas>
 
-    <div class="sun-glow"></div>
+<div class="scene-overlay"></div>
 
-    <div class="sea-light"></div>
+<div class="sun"></div>
 
-    <div class="ripple"></div>
-
-    <div class="sparkles"></div>
+<div class="reflection"></div>
 
 
-    <!-- 左侧椰子树 -->
+<!-- 左椰树 -->
 
-    <div class="palm palm-left">
+<svg
+    class="palm palm-left"
+    viewBox="0 0 260 400"
+    xmlns="http://www.w3.org/2000/svg"
+>
 
-        <svg
-            viewBox="0 0 260 400"
-            xmlns="http://www.w3.org/2000/svg"
-        >
+    <path
+        d="
+        M114 395
+        C124 333 133 270 128 210
+        C124 161 111 127 104 95
+        L122 90
+        C136 133 145 169 145 215
+        C144 279 140 338 132 395
+        Z
+        "
+    />
 
-            <g fill="#052e36">
+    <path
+        d="
+        M112 100
+        C76 66 40 55 5 64
+        C36 85 73 98 111 106
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M113 390
-                    C125 330 131 270 126 212
-                    C122 163 108 126 102 96
-                    L121 91
-                    C133 131 145 168 145 214
-                    C145 277 139 335 130 390
-                    Z
-                    "
-                />
+    <path
+        d="
+        M113 97
+        C66 87 34 102 10 132
+        C53 126 84 117 114 105
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M111 99
-                    C78 68 40 57 8 64
-                    C35 83 68 96 108 105
-                    Z
-                    "
-                />
+    <path
+        d="
+        M113 96
+        C87 50 58 24 22 16
+        C49 54 79 80 114 104
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M112 97
-                    C65 90 34 102 14 127
-                    C51 124 83 116 114 104
-                    Z
-                    "
-                />
+    <path
+        d="
+        M116 94
+        C126 43 150 15 184 4
+        C169 43 147 75 121 103
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M113 95
-                    C86 49 60 25 26 18
-                    C49 51 78 77 112 103
-                    Z
-                    "
-                />
+    <path
+        d="
+        M119 98
+        C162 54 204 42 253 52
+        C207 71 163 89 120 106
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M114 94
-                    C125 44 148 15 180 4
-                    C166 40 146 71 121 102
-                    Z
-                    "
-                />
+    <path
+        d="
+        M121 101
+        C166 89 207 97 247 123
+        C199 121 161 116 121 108
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M119 97
-                    C161 54 203 42 249 51
-                    C207 69 165 87 120 105
-                    Z
-                    "
-                />
-
-                <path
-                    d="
-                    M119 100
-                    C164 89 203 96 241 119
-                    C198 119 161 115 120 107
-                    Z
-                    "
-                />
-
-            </g>
-
-        </svg>
-
-    </div>
+</svg>
 
 
-    <!-- 右侧椰子树 -->
+<!-- 右椰树 -->
 
-    <div class="palm palm-right">
+<svg
+    class="palm palm-right"
+    viewBox="0 0 260 400"
+    xmlns="http://www.w3.org/2000/svg"
+>
 
-        <svg
-            viewBox="0 0 260 400"
-            xmlns="http://www.w3.org/2000/svg"
-        >
+    <path
+        d="
+        M114 395
+        C124 333 133 270 128 210
+        C124 161 111 127 104 95
+        L122 90
+        C136 133 145 169 145 215
+        C144 279 140 338 132 395
+        Z
+        "
+    />
 
-            <g fill="#052e36">
+    <path
+        d="
+        M112 100
+        C76 66 40 55 5 64
+        C36 85 73 98 111 106
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M113 390
-                    C125 330 131 270 126 212
-                    C122 163 108 126 102 96
-                    L121 91
-                    C133 131 145 168 145 214
-                    C145 277 139 335 130 390
-                    Z
-                    "
-                />
+    <path
+        d="
+        M113 97
+        C66 87 34 102 10 132
+        C53 126 84 117 114 105
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M111 99
-                    C78 68 40 57 8 64
-                    C35 83 68 96 108 105
-                    Z
-                    "
-                />
+    <path
+        d="
+        M113 96
+        C87 50 58 24 22 16
+        C49 54 79 80 114 104
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M112 97
-                    C65 90 34 102 14 127
-                    C51 124 83 116 114 104
-                    Z
-                    "
-                />
+    <path
+        d="
+        M116 94
+        C126 43 150 15 184 4
+        C169 43 147 75 121 103
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M113 95
-                    C86 49 60 25 26 18
-                    C49 51 78 77 112 103
-                    Z
-                    "
-                />
+    <path
+        d="
+        M119 98
+        C162 54 204 42 253 52
+        C207 71 163 89 120 106
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M114 94
-                    C125 44 148 15 180 4
-                    C166 40 146 71 121 102
-                    Z
-                    "
-                />
+    <path
+        d="
+        M121 101
+        C166 89 207 97 247 123
+        C199 121 161 116 121 108
+        Z
+        "
+    />
 
-                <path
-                    d="
-                    M119 97
-                    C161 54 203 42 249 51
-                    C207 69 165 87 120 105
-                    Z
-                    "
-                />
-
-                <path
-                    d="
-                    M119 100
-                    C164 89 203 96 241 119
-                    C198 119 161 115 120 107
-                    Z
-                    "
-                />
-
-            </g>
-
-        </svg>
-
-    </div>
+</svg>
 
 
-    <div class="wave wave-1"></div>
-
-    <div class="wave wave-2"></div>
-
-    <div class="wave wave-3"></div>
-
-</div>
-
-
-
-<!-- =======================================================
-     Toast
-======================================================= -->
 
 <div
-    class="toast-stack"
-    id="toastStack"
+    class="toast-box"
+    id="toastBox"
 ></div>
 
 
 
-<!-- =======================================================
-     主体
-======================================================= -->
-
 <main class="app">
 
 
-    <!-- Hero -->
+<!-- =======================================================
+     Hero
+======================================================= -->
 
-    <section class="hero">
+<section class="hero">
 
-        <div class="hero-brand">
+    <div class="hero-left">
 
-            <div class="eyebrow">
+        <div class="kicker">
 
-                <span class="eyebrow-dot"></span>
+            <span class="kicker-dot"></span>
 
-                LIVE SALES DATABASE
+            SANYA · PRIVATE SALES DASHBOARD
+
+        </div>
+
+        <h1>
+            挣钱上三亚
+        </h1>
+
+        <div class="hero-sub">
+            每一笔成交，都离海边更近一点。
+        </div>
+
+    </div>
+
+
+    <div class="hero-actions">
+
+        <button
+            class="icon-btn"
+            id="topRefresh"
+            title="刷新数据"
+        >
+            ↻
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- =======================================================
+     Stats
+======================================================= -->
+
+<section class="stats">
+
+    <div class="stat stat-main glass">
+
+        <div class="stat-label">
+            TOTAL REVENUE
+        </div>
+
+        <div
+            class="stat-value"
+            id="totalAmount"
+        >
+            ¥0.00
+        </div>
+
+        <div class="stat-caption">
+            累计销售金额
+        </div>
+
+    </div>
+
+
+    <div class="stat glass">
+
+        <div class="stat-label">
+            PROJECTS
+        </div>
+
+        <div
+            class="stat-value"
+            id="totalCount"
+        >
+            0
+        </div>
+
+        <div class="stat-caption">
+            全部项目
+        </div>
+
+    </div>
+
+
+    <div class="stat glass">
+
+        <div class="stat-label">
+            ACTIVE
+        </div>
+
+        <div
+            class="stat-value"
+            id="activeCount"
+        >
+            0
+        </div>
+
+        <div class="stat-caption">
+            正常项目
+        </div>
+
+    </div>
+
+
+    <div class="stat glass">
+
+        <div class="stat-label">
+            ARCHIVED
+        </div>
+
+        <div
+            class="stat-value"
+            id="deletedCount"
+        >
+            0
+        </div>
+
+        <div class="stat-caption">
+            已删除
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =======================================================
+     新增
+======================================================= -->
+
+<section class="panel glass">
+
+    <div class="panel-head">
+
+        <div class="panel-title">
+
+            <div class="panel-icon">
+                +
+            </div>
+
+            <div>
+
+                <h2>
+                    新增销售
+                </h2>
+
+                <p>
+                    保存后自动同步到共享数据库
+                </p>
 
             </div>
 
-            <h1>
-                挣钱上三亚
-            </h1>
+        </div>
 
-            <p class="hero-subtitle">
-                Sanya Dream Fund · Sales Management Dashboard
+    </div>
+
+
+    <div class="form-grid">
+
+        <div class="field">
+
+            <label>
+                售卖日期
+            </label>
+
+            <input
+                class="input"
+                id="sellDate"
+                type="date"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                截止日期
+            </label>
+
+            <input
+                class="input"
+                id="expireDate"
+                type="date"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                售卖价格
+            </label>
+
+            <input
+                class="input"
+                id="price"
+                type="number"
+                step="0.01"
+                placeholder="输入金额"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                买家邮箱
+            </label>
+
+            <input
+                class="input"
+                id="buyerEmail"
+                type="text"
+                placeholder="buyer@example.com"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                项目号
+            </label>
+
+            <input
+                class="input"
+                id="projectNo"
+                type="text"
+                placeholder="项目编号"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                操作人
+            </label>
+
+            <select
+                class="select"
+                id="operator"
+            >
+
+                <option value="崔囤月">
+                    崔囤月
+                </option>
+
+                <option value="刘俊屹">
+                    刘俊屹
+                </option>
+
+                <option
+                    value="曾安南"
+                    selected
+                >
+                    曾安南
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-actions">
+
+        <button
+            class="btn btn-primary"
+            id="btnAdd"
+        >
+            ＋ 新增记录
+        </button>
+
+        <button
+            class="btn btn-secondary"
+            id="btnClear"
+        >
+            清空
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- =======================================================
+     数据
+======================================================= -->
+
+<section class="panel glass">
+
+    <div class="toolbar">
+
+        <div class="toolbar-left">
+
+            <h3>
+                Sales Records
+            </h3>
+
+            <p id="dbStatus">
+                正在连接 Supabase…
             </p>
 
         </div>
 
 
-        <div class="hero-actions">
+        <div class="toolbar-right">
 
-            <button
-                class="icon-button"
-                id="themeBtn"
-                title="切换昼夜模式"
-            >
-                ☾
-            </button>
+            <div class="search-box">
 
-            <button
-                class="icon-button"
-                id="refreshTopBtn"
-                title="刷新数据库"
-            >
-                ↻
-            </button>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ===================================================
-         统计
-    ==================================================== -->
-
-    <section class="stats">
-
-
-        <div class="stat-card glass">
-
-            <div class="stat-label">
-                TOTAL SALES
-            </div>
-
-            <div
-                class="stat-value"
-                id="totalAmount"
-            >
-                ¥0.00
-            </div>
-
-            <div class="stat-caption">
-                累计销售金额
-            </div>
-
-        </div>
-
-
-        <div class="stat-card glass">
-
-            <div class="stat-label">
-                TOTAL PROJECTS
-            </div>
-
-            <div
-                class="stat-value"
-                id="totalCount"
-            >
-                0
-            </div>
-
-            <div class="stat-caption">
-                数据库全部项目
-            </div>
-
-        </div>
-
-
-        <div class="stat-card glass">
-
-            <div class="stat-label">
-                ACTIVE
-            </div>
-
-            <div
-                class="stat-value"
-                id="activeCount"
-            >
-                0
-            </div>
-
-            <div class="stat-caption">
-                当前正常项目
-            </div>
-
-        </div>
-
-
-        <div class="stat-card glass">
-
-            <div class="stat-label">
-                DELETED
-            </div>
-
-            <div
-                class="stat-value"
-                id="deletedCount"
-            >
-                0
-            </div>
-
-            <div class="stat-caption">
-                标记为已删除
-            </div>
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- ===================================================
-         新增记录
-    ==================================================== -->
-
-    <section class="main-panel glass">
-
-        <div class="panel-header">
-
-            <div class="panel-title">
-
-                <div class="panel-title-icon">
-                    ＋
-                </div>
-
-                <div>
-
-                    <h2>
-                        新增销售记录
-                    </h2>
-
-                    <p>
-                        数据将实时保存至 Supabase
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="form-grid">
-
-
-            <div class="field">
-
-                <label>
-                    售卖日期
-                </label>
+                <span>⌕</span>
 
                 <input
-                    class="input"
-                    type="date"
-                    id="sellDate"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="搜索邮箱、项目号、操作人"
                 >
 
             </div>
-
-
-            <div class="field">
-
-                <label>
-                    截止日期
-                </label>
-
-                <input
-                    class="input"
-                    type="date"
-                    id="expireDate"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    售卖价格
-                </label>
-
-                <input
-                    class="input"
-                    type="number"
-                    step="0.01"
-                    id="price"
-                    placeholder="¥ 金额"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    买家邮箱
-                </label>
-
-                <input
-                    class="input"
-                    type="text"
-                    id="buyerEmail"
-                    placeholder="buyer@example.com"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    项目号
-                </label>
-
-                <input
-                    class="input"
-                    type="text"
-                    id="projectNo"
-                    placeholder="项目编号"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    操作人
-                </label>
-
-                <select
-                    class="select"
-                    id="operator"
-                >
-
-                    <option value="崔囤月">
-                        崔囤月
-                    </option>
-
-                    <option value="刘俊屹">
-                        刘俊屹
-                    </option>
-
-                    <option
-                        value="曾安南"
-                        selected
-                    >
-                        曾安南
-                    </option>
-
-                </select>
-
-            </div>
-
-
-        </div>
-
-
-
-        <div class="form-actions">
 
 
             <button
-                class="btn btn-primary"
-                id="btnAdd"
+                class="btn btn-secondary"
+                id="btnRefresh"
             >
-
-                <span>
-                    ＋
-                </span>
-
-                <span>
-                    新增销售记录
-                </span>
-
+                ↻ 刷新
             </button>
 
 
             <button
                 class="btn btn-secondary"
-                id="btnClear"
+                id="btnExport"
             >
-                清空输入
+                ↓ CSV
             </button>
 
+        </div>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+
+                    <th>售卖日期</th>
+
+                    <th>截止日期</th>
+
+                    <th>售价</th>
+
+                    <th>买家邮箱</th>
+
+                    <th>项目号</th>
+
+                    <th>状态</th>
+
+                    <th>操作人</th>
+
+                    <th>操作</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="tableBody"></tbody>
+
+        </table>
+
+
+        <div
+            class="empty"
+            id="emptyState"
+        >
+
+            <div class="empty-icon">
+                ◌
+            </div>
+
+            暂无符合条件的数据
 
         </div>
 
-    </section>
+    </div>
 
+</section>
 
 
-    <!-- ===================================================
-         数据表
-    ==================================================== -->
+<div class="footer">
 
-    <section class="data-panel glass">
+    SANYA DREAM FUND ·
+    <span id="year"></span>
 
-
-        <div class="data-toolbar">
-
-
-            <div class="data-toolbar-left">
-
-                <h3>
-                    销售项目
-                </h3>
-
-                <p id="databaseStatus">
-                    正在连接数据库…
-                </p>
-
-            </div>
-
-
-            <div class="toolbar-controls">
-
-
-                <div class="search-wrap">
-
-                    <span class="search-icon">
-                        ⌕
-                    </span>
-
-                    <input
-                        class="search-input"
-                        id="searchInput"
-                        type="text"
-                        placeholder="搜索邮箱、项目号、操作人..."
-                    >
-
-                </div>
-
-
-                <button
-                    class="btn btn-secondary"
-                    id="btnRefresh"
-                >
-                    ↻ 刷新
-                </button>
-
-
-                <button
-                    class="btn btn-secondary"
-                    id="btnExport"
-                >
-                    ↓ 导出 CSV
-                </button>
-
-
-            </div>
-
-
-        </div>
-
-
-
-        <div class="table-shell">
-
-
-            <table>
-
-
-                <thead>
-
-                    <tr>
-
-                        <th>#</th>
-
-                        <th>
-                            售卖日期
-                        </th>
-
-                        <th>
-                            截止日期
-                        </th>
-
-                        <th>
-                            售价
-                        </th>
-
-                        <th>
-                            买家邮箱
-                        </th>
-
-                        <th>
-                            项目号
-                        </th>
-
-                        <th>
-                            状态
-                        </th>
-
-                        <th>
-                            操作人
-                        </th>
-
-                        <th>
-                            操作
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="tableBody">
-
-                </tbody>
-
-
-            </table>
-
-
-            <div
-                id="emptyState"
-                class="empty-state"
-                style="display:none;"
-            >
-
-                <div class="empty-icon">
-                    🌴
-                </div>
-
-                暂时没有符合条件的销售记录
-
-            </div>
-
-
-        </div>
-
-
-    </section>
-
-
-
-    <footer class="footer">
-
-        SANYA DREAM FUND · LIVE DATABASE ·
-        <span id="footerYear"></span>
-
-    </footer>
+</div>
 
 
 </main>
@@ -2479,31 +2052,25 @@ body.night .sparkles {
 
 
 <!-- =======================================================
-     编辑弹窗
+     编辑窗口
 ======================================================= -->
 
 <div
-    class="modal-backdrop"
+    class="modal-mask"
     id="editModal"
 >
 
     <div class="modal">
 
+        <div class="modal-top">
 
-        <div class="modal-header">
-
-            <div>
-
-                <h3>
-                    编辑销售记录
-                </h3>
-
-            </div>
-
+            <h3>
+                编辑销售记录
+            </h3>
 
             <button
-                class="close-btn"
-                id="closeEditModal"
+                class="modal-close"
+                id="closeModal"
             >
                 ×
             </button>
@@ -2511,9 +2078,7 @@ body.night .sparkles {
         </div>
 
 
-
         <div class="modal-grid">
-
 
             <div class="field">
 
@@ -2548,7 +2113,7 @@ body.night .sparkles {
             <div class="field">
 
                 <label>
-                    售卖价格
+                    售价
                 </label>
 
                 <input
@@ -2570,7 +2135,6 @@ body.night .sparkles {
                 <input
                     class="input"
                     id="editBuyerEmail"
-                    type="text"
                 >
 
             </div>
@@ -2585,7 +2149,6 @@ body.night .sparkles {
                 <input
                     class="input"
                     id="editProjectNo"
-                    type="text"
                 >
 
             </div>
@@ -2618,13 +2181,10 @@ body.night .sparkles {
 
             </div>
 
-
         </div>
 
 
-
         <div class="modal-actions">
-
 
             <button
                 class="btn btn-secondary"
@@ -2633,7 +2193,6 @@ body.night .sparkles {
                 取消
             </button>
 
-
             <button
                 class="btn btn-primary"
                 id="saveEdit"
@@ -2641,9 +2200,7 @@ body.night .sparkles {
                 保存修改
             </button>
 
-
         </div>
-
 
     </div>
 
@@ -2653,73 +2210,509 @@ body.night .sparkles {
 
 <script>
 /* =========================================================
-   01. Supabase 配置
+   Supabase
 ========================================================= */
 
 const SUPABASE_URL =
     "https://dufemmclialublrxzwny.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY =
+const SUPABASE_KEY =
     "sb_publishable_G1lGo2yiVKzQeNFiJdG6Dg_HCdWFEFU";
 
-
-const { createClient } =
-    window.supabase;
-
+const {
+    createClient
+} = window.supabase;
 
 const sb =
     createClient(
         SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY,
+        SUPABASE_KEY,
         {
-            db: {
-                schema: "public"
+            db:{
+                schema:"public"
             }
         }
     );
 
 
 /* =========================================================
-   02. DOM
+   Canvas 动态海浪
+========================================================= */
+
+const canvas =
+    document.getElementById(
+        "oceanCanvas"
+    );
+
+const ctx =
+    canvas.getContext(
+        "2d"
+    );
+
+let W = 0;
+let H = 0;
+let DPR = 1;
+
+let particles = [];
+
+
+function resizeCanvas(){
+
+    DPR =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
+
+    W =
+        window.innerWidth;
+
+    H =
+        window.innerHeight;
+
+    canvas.width =
+        W * DPR;
+
+    canvas.height =
+        H * DPR;
+
+    canvas.style.width =
+        W + "px";
+
+    canvas.style.height =
+        H + "px";
+
+    ctx.setTransform(
+        DPR,
+        0,
+        0,
+        DPR,
+        0,
+        0
+    );
+
+    createParticles();
+
+}
+
+
+function createParticles(){
+
+    const count =
+        Math.min(
+            70,
+            Math.floor(
+                W / 18
+            )
+        );
+
+    particles =
+        Array.from(
+            {
+                length:count
+            },
+            () => ({
+
+                x:
+                    Math.random() * W,
+
+                y:
+                    H * .42
+                    +
+                    Math.random()
+                    *
+                    H * .48,
+
+                r:
+                    Math.random()
+                    * 1.4
+                    + .3,
+
+                speed:
+                    Math.random()
+                    * .18
+                    + .04,
+
+                phase:
+                    Math.random()
+                    *
+                    Math.PI
+                    *
+                    2
+
+            })
+        );
+
+}
+
+
+function drawWave(
+    t,
+    baseY,
+    amplitude,
+    length,
+    speed,
+    alpha,
+    color
+){
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        0,
+        H
+    );
+
+    for(
+        let x = 0;
+        x <= W;
+        x += 6
+    ){
+
+        const y =
+            baseY
+
+            +
+            Math.sin(
+                x / length
+                +
+                t * speed
+            )
+            *
+            amplitude
+
+            +
+            Math.sin(
+                x / (length * .55)
+                -
+                t * speed * .65
+            )
+            *
+            amplitude
+            *
+            .28;
+
+        ctx.lineTo(
+            x,
+            y
+        );
+
+    }
+
+    ctx.lineTo(
+        W,
+        H
+    );
+
+    ctx.closePath();
+
+    ctx.globalAlpha =
+        alpha;
+
+    ctx.fillStyle =
+        color;
+
+    ctx.fill();
+
+    ctx.globalAlpha =
+        1;
+
+}
+
+
+function drawFineLines(t){
+
+    ctx.lineWidth =
+        .65;
+
+    for(
+        let i = 0;
+        i < 12;
+        i++
+    ){
+
+        const yBase =
+            H * .54
+            +
+            i
+            *
+            H * .035;
+
+        ctx.beginPath();
+
+        for(
+            let x = 0;
+            x <= W;
+            x += 8
+        ){
+
+            const y =
+                yBase
+
+                +
+                Math.sin(
+                    x / (110 + i * 8)
+                    +
+                    t * (.45 + i * .014)
+                )
+
+                *
+                (2 + i * .18);
+
+            if(x === 0){
+
+                ctx.moveTo(
+                    x,
+                    y
+                );
+
+            }else{
+
+                ctx.lineTo(
+                    x,
+                    y
+                );
+
+            }
+
+        }
+
+        ctx.strokeStyle =
+            `rgba(
+                220,
+                242,
+                236,
+                ${0.035 + i * .002}
+            )`;
+
+        ctx.stroke();
+
+    }
+
+}
+
+
+function drawParticles(t){
+
+    particles.forEach(
+        p => {
+
+            const twinkle =
+                .35
+                +
+                Math.sin(
+                    t * 1.3
+                    +
+                    p.phase
+                )
+                *
+                .18;
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x,
+                p.y,
+                p.r,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle =
+                `rgba(
+                    238,
+                    222,
+                    190,
+                    ${twinkle}
+                )`;
+
+            ctx.fill();
+
+            p.x += p.speed;
+
+            if(
+                p.x >
+                W + 10
+            ){
+
+                p.x = -10;
+
+            }
+
+        }
+    );
+
+}
+
+
+function animateOcean(time){
+
+    const t =
+        time / 1000;
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    const sky =
+        ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            H
+        );
+
+    sky.addColorStop(
+        0,
+        "#061418"
+    );
+
+    sky.addColorStop(
+        .46,
+        "#0a2429"
+    );
+
+    sky.addColorStop(
+        1,
+        "#0b3439"
+    );
+
+    ctx.fillStyle =
+        sky;
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    const glow =
+        ctx.createRadialGradient(
+            W * .76,
+            H * .24,
+            10,
+            W * .76,
+            H * .24,
+            Math.max(
+                W,
+                H
+            )
+            *
+            .55
+        );
+
+    glow.addColorStop(
+        0,
+        "rgba(232,206,153,.13)"
+    );
+
+    glow.addColorStop(
+        .45,
+        "rgba(84,146,140,.05)"
+    );
+
+    glow.addColorStop(
+        1,
+        "rgba(0,0,0,0)"
+    );
+
+    ctx.fillStyle =
+        glow;
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    drawWave(
+        t,
+        H * .52,
+        13,
+        120,
+        .40,
+        .34,
+        "#19444a"
+    );
+
+    drawWave(
+        t,
+        H * .61,
+        19,
+        150,
+        -.28,
+        .30,
+        "#0e353b"
+    );
+
+    drawWave(
+        t,
+        H * .72,
+        25,
+        190,
+        .21,
+        .28,
+        "#08292e"
+    );
+
+    drawFineLines(t);
+
+    drawParticles(t);
+
+    requestAnimationFrame(
+        animateOcean
+    );
+
+}
+
+
+resizeCanvas();
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+requestAnimationFrame(
+    animateOcean
+);
+
+
+/* =========================================================
+   DOM
 ========================================================= */
 
 const $ =
     selector =>
-        document.querySelector(selector);
+        document.querySelector(
+            selector
+        );
 
 
-const tableBody =
-    $("#tableBody");
-
-const emptyState =
-    $("#emptyState");
-
-const searchInput =
-    $("#searchInput");
-
-const databaseStatus =
-    $("#databaseStatus");
-
-const toastStack =
-    $("#toastStack");
-
-
-const sellDateEl =
+const sellDate =
     $("#sellDate");
 
-const expireDateEl =
+const expireDate =
     $("#expireDate");
 
-const priceEl =
+const price =
     $("#price");
 
-const buyerEmailEl =
+const buyerEmail =
     $("#buyerEmail");
 
-const projectNoEl =
+const projectNo =
     $("#projectNo");
 
-const operatorEl =
+const operator =
     $("#operator");
 
 
@@ -2732,19 +2725,28 @@ const btnClear =
 const btnRefresh =
     $("#btnRefresh");
 
-const refreshTopBtn =
-    $("#refreshTopBtn");
+const topRefresh =
+    $("#topRefresh");
 
 const btnExport =
     $("#btnExport");
 
-const themeBtn =
-    $("#themeBtn");
+const searchInput =
+    $("#searchInput");
 
 
-/* =========================================================
-   03. 状态
-========================================================= */
+const tableBody =
+    $("#tableBody");
+
+const emptyState =
+    $("#emptyState");
+
+const dbStatus =
+    $("#dbStatus");
+
+const toastBox =
+    $("#toastBox");
+
 
 let allRows = [];
 
@@ -2752,66 +2754,88 @@ let editingId = null;
 
 
 /* =========================================================
-   04. 工具函数
+   工具
 ========================================================= */
 
-function escapeHtml(value) {
+function safe(value){
 
-    return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-}
-
-
-function money(value) {
-
-    return new Intl.NumberFormat(
-        "zh-CN",
-        {
-            style: "currency",
-            currency: "CNY",
-            minimumFractionDigits: 2
-        }
-    ).format(
-        Number(value || 0)
+    return String(
+        value ?? ""
+    )
+    .replaceAll(
+        "&",
+        "&amp;"
+    )
+    .replaceAll(
+        "<",
+        "&lt;"
+    )
+    .replaceAll(
+        ">",
+        "&gt;"
+    )
+    .replaceAll(
+        '"',
+        "&quot;"
+    )
+    .replaceAll(
+        "'",
+        "&#039;"
     );
 
 }
 
 
-function toast(
-    message,
+function money(value){
+
+    return new Intl.NumberFormat(
+        "zh-CN",
+        {
+            style:"currency",
+            currency:"CNY",
+            minimumFractionDigits:2
+        }
+    ).format(
+        Number(
+            value || 0
+        )
+    );
+
+}
+
+
+function notify(
+    text,
     type = "info"
-) {
+){
 
     const item =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     item.className =
         `toast ${type}`;
 
     item.textContent =
-        message;
+        text;
 
-    toastStack.appendChild(item);
-
+    toastBox.appendChild(
+        item
+    );
 
     setTimeout(
         () => {
 
-            item.style.opacity = "0";
+            item.style.opacity =
+                "0";
 
             item.style.transform =
-                "translateX(20px)";
+                "translateX(15px)";
 
         },
-        2800
+        2700
     );
-
 
     setTimeout(
         () => {
@@ -2819,76 +2843,38 @@ function toast(
             item.remove();
 
         },
-        3250
+        3100
     );
 
 }
 
 
-function setLoading(
-    button,
-    loading,
-    text
-) {
+function daysLeft(date){
 
-    if (loading) {
-
-        button.disabled = true;
-
-        button.dataset.original =
-            button.innerHTML;
-
-        button.innerHTML =
-            `
-            <span class="loader"></span>
-            ${text}
-            `;
-
-    }
-
-    else {
-
-        button.disabled = false;
-
-        if (
-            button.dataset.original
-        ) {
-
-            button.innerHTML =
-                button.dataset.original;
-
-        }
-
-    }
-
-}
-
-
-function daysUntil(dateString) {
-
-    if (!dateString)
+    if(!date)
         return null;
 
-
-    const today =
+    const now =
         new Date();
 
-    today.setHours(
-        0,0,0,0
+    now.setHours(
+        0,
+        0,
+        0,
+        0
     );
-
 
     const target =
         new Date(
-            dateString + "T00:00:00"
+            date +
+            "T00:00:00"
         );
-
 
     return Math.ceil(
         (
-            target.getTime()
+            target
             -
-            today.getTime()
+            now
         )
         /
         86400000
@@ -2897,85 +2883,76 @@ function daysUntil(dateString) {
 }
 
 
-/* =========================================================
-   05. 判断状态
-========================================================= */
+function getStatus(row){
 
-function getStatus(row) {
-
-    if (
-        row.is_deleted === "已删除"
-    ) {
+    if(
+        row.is_deleted
+        ===
+        "已删除"
+    ){
 
         return {
-            text: "已删除",
-            className:
-                "badge-deleted"
+            label:"已删除",
+            cls:"badge-deleted"
         };
 
     }
 
-
-    const diff =
-        daysUntil(
+    const d =
+        daysLeft(
             row.expire_date
         );
 
-
-    if (
-        diff !== null
+    if(
+        d !== null
         &&
-        diff < 0
-    ) {
+        d < 0
+    ){
 
         return {
-            text: "已过期",
-            className:
-                "badge-expired"
+            label:"已过期",
+            cls:"badge-expired"
         };
 
     }
 
-
-    if (
-        diff !== null
+    if(
+        d !== null
         &&
-        diff <= 7
-    ) {
+        d <= 7
+    ){
 
         return {
-            text:
-                diff === 0
-                    ? "今天到期"
-                    : `${diff}天后到期`,
+            label:
+                d === 0
+                ?
+                "今天到期"
+                :
+                `${d} 天后到期`,
 
-            className:
-                "badge-warning"
+            cls:"badge-warning"
         };
 
     }
-
 
     return {
-        text: "正常",
-        className:
-            "badge-normal"
+        label:"正常",
+        cls:"badge-ok"
     };
 
 }
 
 
 /* =========================================================
-   06. 加载数据
+   数据
 ========================================================= */
 
 async function loadData(
-    showToast = false
-) {
+    showTip = false
+){
 
-    databaseStatus.textContent =
-        "正在同步 Supabase 数据库…";
-
+    dbStatus.textContent =
+        "正在同步 Supabase…";
 
     const {
         data,
@@ -2992,29 +2969,25 @@ async function loadData(
         .order(
             "expire_date",
             {
-                ascending: true
+                ascending:true
             }
         );
 
 
-    if (error) {
+    if(error){
 
         console.error(
-            "读取失败：",
             error
         );
 
-
-        databaseStatus.textContent =
+        dbStatus.textContent =
             "数据库连接失败";
 
-
-        toast(
-            "数据库读取失败：" +
+        notify(
+            "读取失败：" +
             error.message,
             "error"
         );
-
 
         return;
 
@@ -3024,20 +2997,18 @@ async function loadData(
     allRows =
         data || [];
 
-
-    databaseStatus.textContent =
-        `数据库已连接 · ${allRows.length} 条记录`;
-
+    dbStatus.textContent =
+        `已连接 · ${allRows.length} 条记录`;
 
     renderStats();
 
-    filterAndRender();
+    filterRows();
 
 
-    if (showToast) {
+    if(showTip){
 
-        toast(
-            "数据已刷新",
+        notify(
+            "数据已同步",
             "success"
         );
 
@@ -3047,12 +3018,12 @@ async function loadData(
 
 
 /* =========================================================
-   07. 统计
+   Stats
 ========================================================= */
 
-function renderStats() {
+function renderStats(){
 
-    const totalAmount =
+    const total =
         allRows.reduce(
             (
                 sum,
@@ -3066,7 +3037,6 @@ function renderStats() {
             0
         );
 
-
     const deleted =
         allRows.filter(
             row =>
@@ -3075,27 +3045,19 @@ function renderStats() {
                 "已删除"
         ).length;
 
-
-    const active =
-        allRows.length
-        -
-        deleted;
-
-
     $("#totalAmount")
         .textContent =
-        money(totalAmount);
-
+        money(total);
 
     $("#totalCount")
         .textContent =
         allRows.length;
 
-
     $("#activeCount")
         .textContent =
-        active;
-
+        allRows.length
+        -
+        deleted;
 
     $("#deletedCount")
         .textContent =
@@ -3105,74 +3067,15 @@ function renderStats() {
 
 
 /* =========================================================
-   08. 搜索
+   Table
 ========================================================= */
 
-function filterAndRender() {
+function renderTable(rows){
 
-    const keyword =
-        searchInput
-            .value
-            .trim()
-            .toLowerCase();
+    tableBody.innerHTML =
+        "";
 
-
-    if (!keyword) {
-
-        renderTable(
-            allRows
-        );
-
-        return;
-
-    }
-
-
-    const filtered =
-        allRows.filter(
-            row => {
-
-                const combined =
-                    [
-                        row.sell_date,
-                        row.expire_date,
-                        row.price,
-                        row.buyer_email,
-                        row.project_no,
-                        row.operator,
-                        row.is_deleted
-                    ]
-
-                    .join(" ")
-
-                    .toLowerCase();
-
-
-                return combined.includes(
-                    keyword
-                );
-
-            }
-        );
-
-
-    renderTable(
-        filtered
-    );
-
-}
-
-
-/* =========================================================
-   09. 渲染 Table
-========================================================= */
-
-function renderTable(rows) {
-
-    tableBody.innerHTML = "";
-
-
-    if (!rows.length) {
+    if(!rows.length){
 
         emptyState.style.display =
             "block";
@@ -3180,7 +3083,6 @@ function renderTable(rows) {
         return;
 
     }
-
 
     emptyState.style.display =
         "none";
@@ -3192,136 +3094,101 @@ function renderTable(rows) {
             index
         ) => {
 
-
             const status =
                 getStatus(row);
-
 
             const tr =
                 document.createElement(
                     "tr"
                 );
 
-
-            if (
+            if(
                 row.is_deleted
                 ===
                 "已删除"
-            ) {
+            ){
 
                 tr.style.opacity =
-                    ".55";
+                    ".48";
 
             }
 
 
             tr.innerHTML =
                 `
-
                 <td>
                     ${index + 1}
                 </td>
 
-
                 <td>
-                    ${escapeHtml(
+                    ${safe(
                         row.sell_date || "-"
                     )}
                 </td>
 
-
                 <td>
-                    ${escapeHtml(
+                    ${safe(
                         row.expire_date || "-"
                     )}
                 </td>
 
-
-                <td class="money">
-
-                    ${escapeHtml(
+                <td class="price">
+                    ${safe(
                         money(
                             row.price
                         )
                     )}
-
                 </td>
 
-
                 <td>
-                    ${escapeHtml(
+                    ${safe(
                         row.buyer_email || "-"
                     )}
                 </td>
 
-
                 <td>
-                    ${escapeHtml(
+                    ${safe(
                         row.project_no || "-"
                     )}
                 </td>
 
-
                 <td>
-
                     <span
                         class="
-                        badge
-                        ${status.className}
+                            badge
+                            ${status.cls}
                         "
                     >
-
-                        ${escapeHtml(
-                            status.text
+                        ${safe(
+                            status.label
                         )}
-
                     </span>
-
                 </td>
 
-
                 <td>
-                    ${escapeHtml(
+                    ${safe(
                         row.operator || "-"
                     )}
                 </td>
 
-
                 <td>
-
                     <div class="row-actions">
-
 
                         <button
                             class="
-                            mini-btn
-                            mini-edit
+                                small-btn
+                                edit
                             "
-                            onclick="
-                            openEdit(
-                                ${Number(row.id)}
-                            )
-                            "
+                            data-action="edit"
+                            data-id="${row.id}"
                         >
                             编辑
                         </button>
 
-
                         <button
-                            class="
-                            mini-btn
-                            mini-toggle
-                            "
-                            onclick="
-                            toggleDelete(
-                                ${Number(row.id)},
-                                '${escapeHtml(
-                                    row.is_deleted
-                                    ||
-                                    "未删除"
-                                )}'
-                            )
-                            "
+                            class="small-btn"
+                            data-action="toggle"
+                            data-id="${row.id}"
                         >
 
                             ${
@@ -3338,28 +3205,20 @@ function renderTable(rows) {
 
                         </button>
 
-
                         <button
                             class="
-                            mini-btn
-                            mini-delete
+                                small-btn
+                                delete
                             "
-                            onclick="
-                            permanentDelete(
-                                ${Number(row.id)}
-                            )
-                            "
+                            data-action="delete"
+                            data-id="${row.id}"
                         >
                             永久删除
                         </button>
 
-
                     </div>
-
                 </td>
-
                 `;
-
 
             tableBody.appendChild(
                 tr
@@ -3372,42 +3231,92 @@ function renderTable(rows) {
 
 
 /* =========================================================
-   10. 新增
+   搜索
+========================================================= */
+
+function filterRows(){
+
+    const q =
+        searchInput
+            .value
+            .trim()
+            .toLowerCase();
+
+    if(!q){
+
+        renderTable(
+            allRows
+        );
+
+        return;
+
+    }
+
+    const result =
+        allRows.filter(
+            row => {
+
+                return [
+                    row.sell_date,
+                    row.expire_date,
+                    row.price,
+                    row.buyer_email,
+                    row.project_no,
+                    row.operator,
+                    row.is_deleted
+                ]
+                .join(" ")
+                .toLowerCase()
+                .includes(q);
+
+            }
+        );
+
+    renderTable(
+        result
+    );
+
+}
+
+searchInput.addEventListener(
+    "input",
+    filterRows
+);
+
+
+/* =========================================================
+   新增
 ========================================================= */
 
 btnAdd.addEventListener(
     "click",
     async () => {
 
-
-        const payload =
-        {
+        const payload = {
 
             sell_date:
-                sellDateEl.value,
+                sellDate.value,
 
             expire_date:
-                expireDateEl.value,
+                expireDate.value,
 
             price:
                 Number(
-                    priceEl.value
-                    ||
-                    0
+                    price.value || 0
                 ),
 
             buyer_email:
-                buyerEmailEl
+                buyerEmail
                     .value
                     .trim(),
 
             project_no:
-                projectNoEl
+                projectNo
                     .value
                     .trim(),
 
             operator:
-                operatorEl.value,
+                operator.value,
 
             is_deleted:
                 "未删除"
@@ -3415,7 +3324,7 @@ btnAdd.addEventListener(
         };
 
 
-        if (
+        if(
             !payload.sell_date
             &&
             !payload.expire_date
@@ -3423,10 +3332,10 @@ btnAdd.addEventListener(
             !payload.buyer_email
             &&
             !payload.project_no
-        ) {
+        ){
 
-            toast(
-                "请先填写销售记录",
+            notify(
+                "请先填写记录内容",
                 "error"
             );
 
@@ -3435,11 +3344,11 @@ btnAdd.addEventListener(
         }
 
 
-        setLoading(
-            btnAdd,
-            true,
-            "保存中"
-        );
+        btnAdd.disabled =
+            true;
+
+        btnAdd.textContent =
+            "保存中…";
 
 
         const {
@@ -3456,25 +3365,24 @@ btnAdd.addEventListener(
             ]);
 
 
-        setLoading(
-            btnAdd,
-            false
-        );
+        btnAdd.disabled =
+            false;
+
+        btnAdd.textContent =
+            "＋ 新增记录";
 
 
-        if (error) {
+        if(error){
 
             console.error(
                 error
             );
 
-
-            toast(
+            notify(
                 "新增失败：" +
                 error.message,
                 "error"
             );
-
 
             return;
 
@@ -3483,12 +3391,10 @@ btnAdd.addEventListener(
 
         clearForm();
 
-
-        toast(
-            "销售记录新增成功",
+        notify(
+            "新增成功",
             "success"
         );
-
 
         await loadData();
 
@@ -3497,26 +3403,25 @@ btnAdd.addEventListener(
 
 
 /* =========================================================
-   11. 清空
+   清空
 ========================================================= */
 
-function clearForm() {
+function clearForm(){
 
-    sellDateEl.value = "";
+    sellDate.value = "";
 
-    expireDateEl.value = "";
+    expireDate.value = "";
 
-    priceEl.value = "";
+    price.value = "";
 
-    buyerEmailEl.value = "";
+    buyerEmail.value = "";
 
-    projectNoEl.value = "";
+    projectNo.value = "";
 
-    operatorEl.value =
+    operator.value =
         "曾安南";
 
 }
-
 
 btnClear.addEventListener(
     "click",
@@ -3525,17 +3430,84 @@ btnClear.addEventListener(
 
 
 /* =========================================================
-   12. 删除状态
+   Table 操作
 ========================================================= */
 
-window.toggleDelete =
-async function(
-    id,
-    current
-) {
+tableBody.addEventListener(
+    "click",
+    async event => {
 
-    const newStatus =
-        current === "已删除"
+        const button =
+            event.target.closest(
+                "button[data-action]"
+            );
+
+        if(!button)
+            return;
+
+        const id =
+            Number(
+                button.dataset.id
+            );
+
+        const action =
+            button.dataset.action;
+
+
+        if(
+            action ===
+            "edit"
+        ){
+
+            openEdit(id);
+
+        }
+
+
+        if(
+            action ===
+            "toggle"
+        ){
+
+            await toggleDelete(id);
+
+        }
+
+
+        if(
+            action ===
+            "delete"
+        ){
+
+            await permanentDelete(id);
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   软删除
+========================================================= */
+
+async function toggleDelete(id){
+
+    const row =
+        allRows.find(
+            r =>
+                Number(r.id)
+                ===
+                Number(id)
+        );
+
+    if(!row)
+        return;
+
+    const next =
+        row.is_deleted
+        ===
+        "已删除"
         ?
         "未删除"
         :
@@ -3552,8 +3524,7 @@ async function(
         )
 
         .update({
-            is_deleted:
-                newStatus
+            is_deleted:next
         })
 
         .eq(
@@ -3562,10 +3533,10 @@ async function(
         );
 
 
-    if (error) {
+    if(error){
 
-        toast(
-            "状态更新失败：" +
+        notify(
+            "更新失败：" +
             error.message,
             "error"
         );
@@ -3575,39 +3546,33 @@ async function(
     }
 
 
-    toast(
-        newStatus ===
+    notify(
+        next ===
         "已删除"
-
         ?
-        "已标记为删除"
-
+        "已标记删除"
         :
         "记录已恢复",
-
         "success"
     );
 
-
     await loadData();
 
-};
+}
 
 
 /* =========================================================
-   13. 永久删除
+   永久删除
 ========================================================= */
 
-window.permanentDelete =
-async function(id) {
+async function permanentDelete(id){
 
     const ok =
         confirm(
             "确定永久删除这条记录吗？\n\n此操作不可恢复。"
         );
 
-
-    if (!ok)
+    if(!ok)
         return;
 
 
@@ -3628,9 +3593,9 @@ async function(id) {
         );
 
 
-    if (error) {
+    if(error){
 
-        toast(
+        notify(
             "删除失败：" +
             error.message,
             "error"
@@ -3641,39 +3606,36 @@ async function(id) {
     }
 
 
-    toast(
+    notify(
         "记录已永久删除",
         "success"
     );
 
-
     await loadData();
 
-};
+}
 
 
 /* =========================================================
-   14. 编辑
+   编辑 Modal
 ========================================================= */
 
-window.openEdit =
-function(id) {
+function openEdit(id){
 
     const row =
         allRows.find(
-            item =>
-                Number(item.id)
+            r =>
+                Number(r.id)
                 ===
                 Number(id)
         );
 
-
-    if (!row)
+    if(!row)
         return;
 
 
     editingId =
-        Number(id);
+        id;
 
 
     $("#editSellDate").value =
@@ -3697,33 +3659,31 @@ function(id) {
 
     $("#editModal")
         .classList
-        .add("show");
-
-};
-
-
-/* =========================================================
-   15. 关闭编辑
-========================================================= */
-
-function closeEdit() {
-
-    editingId = null;
-
-
-    $("#editModal")
-        .classList
-        .remove("show");
+        .add(
+            "show"
+        );
 
 }
 
 
-$("#closeEditModal")
+function closeEdit(){
+
+    editingId = null;
+
+    $("#editModal")
+        .classList
+        .remove(
+            "show"
+        );
+
+}
+
+
+$("#closeModal")
     .addEventListener(
         "click",
         closeEdit
     );
-
 
 $("#cancelEdit")
     .addEventListener(
@@ -3737,11 +3697,11 @@ $("#editModal")
         "click",
         event => {
 
-            if (
+            if(
                 event.target.id
                 ===
                 "editModal"
-            ) {
+            ){
 
                 closeEdit();
 
@@ -3751,8 +3711,26 @@ $("#editModal")
     );
 
 
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.key
+            ===
+            "Escape"
+        ){
+
+            closeEdit();
+
+        }
+
+    }
+);
+
+
 /* =========================================================
-   16. 保存编辑
+   保存编辑
 ========================================================= */
 
 $("#saveEdit")
@@ -3761,7 +3739,7 @@ $("#saveEdit")
         async () => {
 
 
-            if (
+            if(
                 editingId === null
             )
                 return;
@@ -3771,15 +3749,14 @@ $("#saveEdit")
                 $("#saveEdit");
 
 
-            setLoading(
-                button,
-                true,
-                "保存中"
-            );
+            button.disabled =
+                true;
+
+            button.textContent =
+                "保存中…";
 
 
-            const updates =
-            {
+            const updates = {
 
                 sell_date:
                     $("#editSellDate")
@@ -3833,15 +3810,16 @@ $("#saveEdit")
                 );
 
 
-            setLoading(
-                button,
-                false
-            );
+            button.disabled =
+                false;
+
+            button.textContent =
+                "保存修改";
 
 
-            if (error) {
+            if(error){
 
-                toast(
+                notify(
                     "保存失败：" +
                     error.message,
                     "error"
@@ -3854,12 +3832,10 @@ $("#saveEdit")
 
             closeEdit();
 
-
-            toast(
+            notify(
                 "修改已保存",
                 "success"
             );
-
 
             await loadData();
 
@@ -3868,7 +3844,7 @@ $("#saveEdit")
 
 
 /* =========================================================
-   17. 刷新
+   刷新
 ========================================================= */
 
 btnRefresh.addEventListener(
@@ -3877,8 +3853,7 @@ btnRefresh.addEventListener(
         loadData(true)
 );
 
-
-refreshTopBtn.addEventListener(
+topRefresh.addEventListener(
     "click",
     () =>
         loadData(true)
@@ -3886,28 +3861,19 @@ refreshTopBtn.addEventListener(
 
 
 /* =========================================================
-   18. 搜索
-========================================================= */
-
-searchInput.addEventListener(
-    "input",
-    filterAndRender
-);
-
-
-/* =========================================================
-   19. CSV
+   CSV
 ========================================================= */
 
 btnExport.addEventListener(
     "click",
     () => {
 
+        if(
+            !allRows.length
+        ){
 
-        if (!allRows.length) {
-
-            toast(
-                "当前没有可导出的数据",
+            notify(
+                "当前没有数据",
                 "error"
             );
 
@@ -3916,8 +3882,7 @@ btnExport.addEventListener(
         }
 
 
-        const headers =
-        [
+        const header = [
             "序号",
             "售卖日期",
             "截止日期",
@@ -3932,7 +3897,7 @@ btnExport.addEventListener(
         let csv =
             "\uFEFF"
             +
-            headers.join(",")
+            header.join(",")
             +
             "\n";
 
@@ -3943,23 +3908,28 @@ btnExport.addEventListener(
                 index
             ) => {
 
+                const values = [
 
-                const values =
-                [
                     index + 1,
-                    row.sell_date || "",
-                    row.expire_date || "",
-                    row.price || 0,
-                    row.buyer_email || "",
-                    row.project_no || "",
-                    row.is_deleted || "",
-                    row.operator || ""
-                ];
 
+                    row.sell_date || "",
+
+                    row.expire_date || "",
+
+                    row.price || 0,
+
+                    row.buyer_email || "",
+
+                    row.project_no || "",
+
+                    row.is_deleted || "",
+
+                    row.operator || ""
+
+                ];
 
                 csv +=
                     values
-
                     .map(
                         value =>
                             `"${String(value)
@@ -3968,9 +3938,7 @@ btnExport.addEventListener(
                                     '""'
                                 )}"`
                     )
-
                     .join(",")
-
                     +
                     "\n";
 
@@ -3983,7 +3951,7 @@ btnExport.addEventListener(
                 [csv],
                 {
                     type:
-                        "text/csv;charset=utf-8;"
+                        "text/csv;charset=utf-8"
                 }
             );
 
@@ -3994,39 +3962,32 @@ btnExport.addEventListener(
             );
 
 
-        const anchor =
+        const a =
             document.createElement(
                 "a"
             );
 
 
-        anchor.href =
+        a.href =
             url;
 
-
-        anchor.download =
-            "挣钱上三亚_销售数据.csv";
-
+        a.download =
+            "挣钱上三亚_销售记录.csv";
 
         document.body
-            .appendChild(
-                anchor
-            );
+            .appendChild(a);
 
+        a.click();
 
-        anchor.click();
-
-
-        anchor.remove();
-
+        a.remove();
 
         URL.revokeObjectURL(
             url
         );
 
 
-        toast(
-            "CSV 导出完成",
+        notify(
+            "CSV 已导出",
             "success"
         );
 
@@ -4035,121 +3996,22 @@ btnExport.addEventListener(
 
 
 /* =========================================================
-   20. 夜间模式
+   Footer
 ========================================================= */
 
-themeBtn.addEventListener(
-    "click",
-    () => {
-
-
-        document.body
-            .classList
-            .toggle(
-                "night"
-            );
-
-
-        const isNight =
-            document.body
-                .classList
-                .contains(
-                    "night"
-                );
-
-
-        themeBtn.textContent =
-            isNight
-            ?
-            "☀"
-            :
-            "☾";
-
-
-        localStorage.setItem(
-            "sanyaTheme",
-            isNight
-            ?
-            "night"
-            :
-            "day"
-        );
-
-    }
-);
-
-
-/* =========================================================
-   21. 初始化主题
-========================================================= */
-
-function initTheme() {
-
-    const saved =
-        localStorage.getItem(
-            "sanyaTheme"
-        );
-
-
-    if (
-        saved === "night"
-    ) {
-
-        document.body
-            .classList
-            .add(
-                "night"
-            );
-
-
-        themeBtn.textContent =
-            "☀";
-
-    }
-
-}
-
-
-/* =========================================================
-   22. Footer
-========================================================= */
-
-$("#footerYear")
+$("#year")
     .textContent =
     new Date()
         .getFullYear();
 
 
 /* =========================================================
-   23. ESC 关闭弹窗
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key ===
-            "Escape"
-        ) {
-
-            closeEdit();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   24. 页面启动
+   初始化
 ========================================================= */
 
 window.addEventListener(
     "load",
     async () => {
-
-        initTheme();
 
         await loadData();
 
