@@ -90,139 +90,131 @@ th{background:#dbeafe}
 </div>
 
 <script>
-// ==========填入你的Supabase信息============
 const SUPABASE_URL = "https://fhbqgieahzkdonknkotg.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_0hgg6udla0_K8P-1pIliCg_pXElMix-";
-// ==========================================
 
-const { createClient } = window.supabase;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// 只执行一次createClient，杜绝重复声明
+let supabase;
+document.addEventListener('DOMContentLoaded', async function () {
+    const { createClient } = window.supabase;
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const tableBody = document.getElementById('tableBody');
-const totalBar = document.getElementById('totalBar');
+    const tableBody = document.getElementById('tableBody');
+    const totalBar = document.getElementById('totalBar');
 
-const sellDateEl = document.getElementById('sellDate');
-const expireDateEl = document.getElementById('expireDate');
-const priceEl = document.getElementById('price');
-const buyerEmailEl = document.getElementById('buyerEmail');
-const projectNoEl = document.getElementById('projectNo');
-const operatorEl = document.getElementById('operator');
-const btnAdd = document.getElementById('btnAdd');
-const btnExport = document.getElementById('btnExport');
+    const sellDateEl = document.getElementById('sellDate');
+    const expireDateEl = document.getElementById('expireDate');
+    const priceEl = document.getElementById('price');
+    const buyerEmailEl = document.getElementById('buyerEmail');
+    const projectNoEl = document.getElementById('projectNo');
+    const operatorEl = document.getElementById('operator');
+    const btnAdd = document.getElementById('btnAdd');
+    const btnExport = document.getElementById('btnExport');
 
-//加载数据：按截止日期升序，到期靠前排上面
-async function loadData(){
-    console.log("读取数据");
-    const {data,error} = await supabase
-        .from('records')
-        .select('*')
-        .order('expireDate', {ascending:true});
 
-    if(error){
-        console.error("读取错误",error);
-        return;
-    }
-    renderTable(data);
-}
+    async function loadData(){
+        console.log("读取数据");
+        const {data,error} = await supabase
+            .from('records')
+            .select('*')
+            .order('expireDate', {ascending:true});
 
-//渲染表格，每行有切换【是否已删除】按钮
-function renderTable(list){
-    tableBody.innerHTML = "";
-    let sum = 0;
-    list.forEach((row,idx)=>{
-        sum += Number(row.price||0);
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${idx+1}</td>
-            <td>${row.sellDate||''}</td>
-            <td>${row.expireDate||''}</td>
-            <td>${row.price||0}</td>
-            <td>${row.buyerEmail||''}</td>
-            <td>${row.project_no||''}</td>
-            <td>${row.is_deleted||"未删除"}</td>
-            <td>${row.operator||''}</td>
-            <td>
-                <button class="btn-toggle-del" data-id="${row.id}" data-status="${row.is_deleted||'未删除'}">切换删除状态</button>
-                <button class="btn-del" data-id="${row.id}">删除整行</button>
-            </td>
-        `;
-        tableBody.appendChild(tr);
-    })
-    totalBar.innerText = `合计（共${list.length}条） ¥${sum.toFixed(2)}`;
-
-    //切换是否已删除状态
-    document.querySelectorAll('.btn-toggle-del').forEach(btn=>{
-        btn.onclick = async function(){
-            const rid = Number(this.dataset.id);
-            const currStatus = this.dataset.status;
-            const newStatus = currStatus === "未删除" ? "已删除" : "未删除";
-            const {err} = await supabase.from('records')
-                .update({is_deleted: newStatus})
-                .eq('id', rid);
-            if(err) console.error("更新状态失败",err);
-            loadData();
+        if(error){
+            console.error("读取错误",error);
+            return;
         }
-    })
+        renderTable(data);
+    }
 
-    //删除整行
-    document.querySelectorAll('.btn-del').forEach(btn=>{
-        btn.onclick = async function(){
-            const rid = Number(this.dataset.id);
-            await supabase.from('records').delete().eq('id',rid);
-            loadData();
+    function renderTable(list){
+        tableBody.innerHTML = "";
+        let sum = 0;
+        list.forEach((row,idx)=>{
+            sum += Number(row.price||0);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${idx+1}</td>
+                <td>${row.sellDate||''}</td>
+                <td>${row.expireDate||''}</td>
+                <td>${row.price||0}</td>
+                <td>${row.buyerEmail||''}</td>
+                <td>${row.project_no||''}</td>
+                <td>${row.is_deleted||"未删除"}</td>
+                <td>${row.operator||''}</td>
+                <td>
+                    <button class="btn-toggle-del" data-id="${row.id}" data-status="${row.is_deleted||'未删除'}">切换删除状态</button>
+                    <button class="btn-del" data-id="${row.id}">删除整行</button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        })
+        totalBar.innerText = `合计（共${list.length}条） ¥${sum.toFixed(2)}`;
+
+        document.querySelectorAll('.btn-toggle-del').forEach(btn=>{
+            btn.onclick = async function(){
+                const rid = Number(this.dataset.id);
+                const currStatus = this.dataset.status;
+                const newStatus = currStatus === "未删除" ? "已删除" : "未删除";
+                const {error} = await supabase.from('records')
+                    .update({is_deleted: newStatus})
+                    .eq('id', rid);
+                if(error) console.error("更新状态失败",error);
+                loadData();
+            }
+        })
+
+        document.querySelectorAll('.btn-del').forEach(btn=>{
+            btn.onclick = async function(){
+                const rid = Number(this.dataset.id);
+                await supabase.from('records').delete().eq('id',rid);
+                loadData();
+            }
+        })
+    }
+
+    btnAdd.onclick = async function(){
+        console.log("点击新增");
+        const payload = {
+            sellDate: sellDateEl.value,
+            expireDate: expireDateEl.value,
+            price: Number(priceEl.value||0),
+            buyerEmail: buyerEmailEl.value.trim(),
+            project_no: projectNoEl.value.trim(),
+            operator: operatorEl.value
         }
-    })
-}
-
-//新增记录：不传递is_deleted，由数据库默认"未删除"
-btnAdd.onclick = async function(){
-    console.log("点击新增");
-    const payload = {
-        sellDate: sellDateEl.value,
-        expireDate: expireDateEl.value,
-        price: Number(priceEl.value||0),
-        buyerEmail: buyerEmailEl.value.trim(),
-        project_no: projectNoEl.value.trim(),
-        operator: operatorEl.value
-        // 注意：is_deleted不在此处提交，数据库default='未删除'
+        const {error} = await supabase.from('records').insert([payload]);
+        if(error){
+            console.error("新增错误",error);
+            alert("新增失败:"+JSON.stringify(error));
+            return;
+        }
+        sellDateEl.value = "";
+        expireDateEl.value = "";
+        priceEl.value = "";
+        buyerEmailEl.value = "";
+        projectNoEl.value = "";
+        operatorEl.value = "曾安南";
+        loadData();
     }
-    const {error} = await supabase.from('records').insert([payload]);
-    if(error){
-        console.error("新增错误",error);
-        alert("新增失败:"+JSON.stringify(error));
-        return;
+
+    btnExport.onclick = function(){
+        const headers = ["序号","售卖日期","截止日期","售价(元)","买家邮箱","项目号","是否已删除","操作人"];
+        let csvContent = headers.join(",") + "\n";
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        rows.forEach(tr=>{
+            const tds = Array.from(tr.querySelectorAll('td')).map(td=>'"'+td.innerText+'"');
+            csvContent += tds.join(",") + "\n";
+        })
+        const blob = new Blob([csvContent], {type:'text/csv;charset=utf-8;'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "挣钱上三亚_导出.csv";
+        a.click();
     }
-    //清空表单
-    sellDateEl.value = "";
-    expireDateEl.value = "";
-    priceEl.value = "";
-    buyerEmailEl.value = "";
-    projectNoEl.value = "";
-    operatorEl.value = "曾安南";
-    loadData();
-}
 
-//导出CSV
-btnExport.onclick = function(){
-    const headers = ["序号","售卖日期","截止日期","售价(元)","买家邮箱","项目号","是否已删除","操作人"];
-    let csvContent = headers.join(",") + "\n";
-    const rows = Array.from(tableBody.querySelectorAll('tr'));
-    rows.forEach(tr=>{
-        const tds = Array.from(tr.querySelectorAll('td')).map(td=>'"'+td.innerText+'"');
-        csvContent += tds.join(",") + "\n";
-    })
-    const blob = new Blob([csvContent], {type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "挣钱上三亚_导出.csv";
-    a.click();
-}
-
-window.onload = function(){
-    console.log("页面初始化");
     loadData();
-}
+})
 </script>
 </body>
 </html>
