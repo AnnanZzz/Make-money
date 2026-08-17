@@ -90,14 +90,11 @@ th{background:#dbeafe}
 </div>
 
 <script>
-const SUPABASE_URL = "https://fhbqgieahzkdonknkotg.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_0hgg6udla0_K8P-1pIliCg_pXElMix-";
-
-// 只执行一次createClient，杜绝重复声明
-let supabase;
-document.addEventListener('DOMContentLoaded', async function () {
+(function(){
+    const SUPABASE_URL = "https://fhbqgieahzkdonknkotg.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_0hgg6udla0_K8P-1pIliCg_pXElMix-";
     const { createClient } = window.supabase;
-    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const tableBody = document.getElementById('tableBody');
     const totalBar = document.getElementById('totalBar');
@@ -111,14 +108,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     const btnAdd = document.getElementById('btnAdd');
     const btnExport = document.getElementById('btnExport');
 
-
     async function loadData(){
         console.log("读取数据");
-        const {data,error} = await supabase
+        const {data,error} = await sb
             .from('records')
             .select('*')
             .order('expireDate', {ascending:true});
-
         if(error){
             console.error("读取错误",error);
             return;
@@ -155,18 +150,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const rid = Number(this.dataset.id);
                 const currStatus = this.dataset.status;
                 const newStatus = currStatus === "未删除" ? "已删除" : "未删除";
-                const {error} = await supabase.from('records')
-                    .update({is_deleted: newStatus})
-                    .eq('id', rid);
+                const {error} = await sb.from('records').update({is_deleted: newStatus}).eq('id', rid);
                 if(error) console.error("更新状态失败",error);
                 loadData();
             }
         })
-
         document.querySelectorAll('.btn-del').forEach(btn=>{
             btn.onclick = async function(){
                 const rid = Number(this.dataset.id);
-                await supabase.from('records').delete().eq('id',rid);
+                await sb.from('records').delete().eq('id',rid);
                 loadData();
             }
         })
@@ -182,7 +174,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             project_no: projectNoEl.value.trim(),
             operator: operatorEl.value
         }
-        const {error} = await supabase.from('records').insert([payload]);
+        const {error} = await sb.from('records').insert([payload]);
         if(error){
             console.error("新增错误",error);
             alert("新增失败:"+JSON.stringify(error));
@@ -213,8 +205,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         a.click();
     }
 
-    loadData();
-})
+    window.addEventListener('load',loadData);
+})();
 </script>
 </body>
 </html>
