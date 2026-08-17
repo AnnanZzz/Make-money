@@ -1,1252 +1,943 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F4F0E8">
 
-<title>挣钱上三亚 · Sanya Dream</title>
+<title>挣钱上三亚 · Sanya Sales</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 /* =========================================================
-   全局
+   DESIGN SYSTEM
 ========================================================= */
 
 :root{
-    --ink:#173039;
-    --muted:#6f858a;
+    --bg:#f3f0e9;
+    --surface:#fffdf9;
+    --surface-soft:#f8f5ef;
 
-    --cream:#fffaf1;
-    --cream2:#f6efe3;
+    --ink:#162c2a;
+    --ink-soft:#536866;
+    --muted:#899693;
 
-    --aqua:#3bb9b3;
-    --aqua-dark:#197e82;
+    --ocean:#174b47;
+    --ocean-2:#246861;
+    --ocean-3:#7fae9f;
 
-    --gold:#d6ad68;
-    --coral:#e98f7f;
+    --sand:#d8bb88;
+    --sand-soft:#eee0c4;
 
-    --whiteGlass:rgba(255,255,255,.76);
-    --line:rgba(31,76,84,.12);
+    --green:#2f7d65;
+    --green-soft:#e4f1eb;
+
+    --amber:#aa7726;
+    --amber-soft:#f8eed9;
+
+    --red:#af5656;
+    --red-soft:#f7e4e4;
+
+    --border:rgba(21,51,47,.10);
 
     --shadow:
-        0 24px 70px rgba(42,79,84,.15);
+        0 18px 60px rgba(39,61,56,.08);
+
+    --shadow-hover:
+        0 24px 70px rgba(39,61,56,.13);
+
+    --radius-xl:30px;
+    --radius-lg:22px;
+    --radius-md:16px;
+    --radius-sm:11px;
 }
 
+
+/* =========================================================
+   RESET
+========================================================= */
 
 *{
     box-sizing:border-box;
 }
 
-
 html{
     scroll-behavior:smooth;
 }
 
-
 body{
     margin:0;
-
     min-height:100vh;
 
+    background:var(--bg);
     color:var(--ink);
-
-    background:
-        linear-gradient(
-            180deg,
-            #f7f4ec,
-            #eef6f4
-        );
 
     font-family:
         Inter,
         "SF Pro Display",
+        "SF Pro Text",
         "PingFang SC",
         "Microsoft YaHei",
         system-ui,
+        -apple-system,
         sans-serif;
+
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+}
+
+button,
+input,
+select{
+    font:inherit;
 }
 
 
 /* =========================================================
-   HERO 海岛区域
+   HERO
 ========================================================= */
 
 .hero{
     position:relative;
-
-    height:470px;
-
+    height:560px;
     overflow:hidden;
+
+    background:#7ea69a;
+}
+
+
+/* 海景照片 */
+
+.hero-photo{
+    position:absolute;
+    inset:-6%;
+
+    background-image:
+        url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2400&q=92");
+
+    background-size:cover;
+    background-position:center 58%;
+
+    transform:scale(1.08);
+
+    animation:
+        heroMove 24s ease-in-out infinite alternate;
+
+    will-change:transform;
+}
+
+@keyframes heroMove{
+    0%{
+        transform:
+            scale(1.08)
+            translate3d(-1.4%,0,0);
+    }
+
+    100%{
+        transform:
+            scale(1.16)
+            translate3d(1.8%,-1%,0);
+    }
+}
+
+
+/* 调色层 */
+
+.hero-overlay{
+    position:absolute;
+    inset:0;
 
     background:
         linear-gradient(
+            90deg,
+            rgba(11,35,32,.70) 0%,
+            rgba(11,35,32,.44) 37%,
+            rgba(11,35,32,.10) 72%,
+            rgba(11,35,32,.02) 100%
+        ),
+        linear-gradient(
             180deg,
-            #ffd7b1 0%,
-            #fce9cf 30%,
-            #cceeed 55%,
-            #55c8c7 56%,
-            #14999e 100%
+            rgba(8,30,28,.10),
+            rgba(8,30,28,.05) 58%,
+            rgba(8,30,28,.43)
         );
 }
 
 
-/* =========================================================
-   天空
-========================================================= */
+/* 海面微光 */
 
-.sun{
+.water-light{
     position:absolute;
 
-    width:130px;
-    height:130px;
+    left:35%;
+    right:-10%;
+    bottom:-80px;
 
-    left:68%;
-    top:68px;
+    height:260px;
+
+    opacity:.45;
+
+    background:
+        repeating-linear-gradient(
+            -8deg,
+            transparent 0 17px,
+            rgba(255,255,255,.13) 18px 20px,
+            transparent 21px 37px
+        );
+
+    filter:blur(1px);
+
+    transform:skewX(-6deg);
+
+    animation:
+        waterMove 8s linear infinite;
+}
+
+@keyframes waterMove{
+    from{
+        transform:
+            translateX(-30px)
+            skewX(-6deg);
+    }
+
+    to{
+        transform:
+            translateX(30px)
+            skewX(-6deg);
+    }
+}
+
+
+/* 光晕 */
+
+.hero-glow{
+    position:absolute;
+
+    width:650px;
+    height:650px;
+
+    right:-170px;
+    top:-290px;
 
     border-radius:50%;
 
     background:
         radial-gradient(
             circle,
-            #fff8df 0%,
-            #ffe5a7 45%,
-            #ffc87f 100%
+            rgba(255,225,169,.40),
+            rgba(255,217,150,.08) 46%,
+            transparent 70%
         );
 
-    box-shadow:
-        0 0 40px rgba(255,228,162,.8),
-        0 0 110px rgba(255,195,111,.45);
+    filter:blur(8px);
 
     animation:
-        sunFloat 7s ease-in-out infinite alternate;
+        glow 8s ease-in-out infinite alternate;
 }
 
-
-@keyframes sunFloat{
-
+@keyframes glow{
     from{
-        transform:
-            translateY(0)
-            scale(1);
+        opacity:.68;
+        transform:scale(.94);
     }
 
     to{
-        transform:
-            translateY(8px)
-            scale(1.04);
+        opacity:1;
+        transform:scale(1.07);
     }
-
 }
 
 
-/* =========================================================
-   云朵
-========================================================= */
+/* Hero 内容 */
 
-.cloud{
-    position:absolute;
+.hero-inner{
+    width:min(1480px,calc(100% - 64px));
+    height:100%;
 
-    height:35px;
+    margin:auto;
 
-    border-radius:100px;
+    position:relative;
+    z-index:5;
 
-    background:
-        rgba(255,255,255,.64);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
 
-    filter:blur(.3px);
-
-    opacity:.75;
+    padding-bottom:35px;
 }
 
 
-.cloud::before,
-.cloud::after{
+.hero-kicker{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    color:rgba(255,255,255,.76);
+
+    font-size:13px;
+    font-weight:600;
+
+    letter-spacing:.18em;
+
+    margin-bottom:22px;
+}
+
+
+.hero-kicker::before{
     content:"";
 
-    position:absolute;
+    width:30px;
+    height:1px;
 
-    border-radius:50%;
-
-    background:inherit;
+    background:var(--sand-soft);
 }
 
 
-.cloud::before{
-    width:55px;
-    height:55px;
+.hero-title{
+    margin:0;
 
-    left:20px;
-    top:-28px;
+    color:#fffdf6;
+
+    font-weight:520;
+
+    font-size:clamp(54px,6vw,82px);
+
+    line-height:1;
+    letter-spacing:-.055em;
 }
 
 
-.cloud::after{
-    width:42px;
-    height:42px;
-
-    right:20px;
-    top:-18px;
+.hero-title strong{
+    color:#f2d8aa;
+    font-weight:620;
 }
 
 
-.cloud1{
-    width:150px;
+.hero-copy{
+    max-width:610px;
 
-    left:-180px;
-    top:75px;
+    margin:
+        22px 0 0;
 
-    animation:
-        cloudMove1 38s linear infinite;
+    color:rgba(255,255,255,.82);
+
+    font-size:18px;
+    line-height:1.8;
+
+    letter-spacing:.01em;
 }
 
 
-.cloud2{
-    width:110px;
-
-    left:-140px;
-    top:150px;
-
-    transform:scale(.75);
-
-    animation:
-        cloudMove2 52s linear infinite;
-}
-
-
-@keyframes cloudMove1{
-
-    from{
-        left:-180px;
-    }
-
-    to{
-        left:110%;
-    }
-
-}
-
-
-@keyframes cloudMove2{
-
-    from{
-        left:-160px;
-    }
-
-    to{
-        left:115%;
-    }
-
-}
-
-
-/* =========================================================
-   海平面
-========================================================= */
-
-.ocean{
+.hero-bottom{
     position:absolute;
 
     left:0;
     right:0;
     bottom:0;
 
-    height:220px;
-
-    overflow:hidden;
+    height:110px;
 
     background:
         linear-gradient(
             180deg,
-            #34b7bb 0%,
-            #15999f 45%,
-            #067981 100%
+            transparent,
+            rgba(243,240,233,.06)
         );
 }
 
 
-/* 阳光落在海面的反光 */
-
-.sun-path{
-    position:absolute;
-
-    width:330px;
-    height:250px;
-
-    left:59%;
-    top:-20px;
-
-    transform:
-        perspective(280px)
-        rotateX(60deg);
-
-    background:
-        radial-gradient(
-            ellipse,
-            rgba(255,240,183,.68),
-            rgba(255,226,157,.18) 35%,
-            transparent 67%
-        );
-
-    filter:blur(6px);
-
-    animation:
-        shimmer 4s ease-in-out infinite alternate;
-}
-
-
-@keyframes shimmer{
-
-    from{
-        transform:
-            translateX(-15px)
-            perspective(280px)
-            rotateX(60deg)
-            scaleX(.85);
-    }
-
-    to{
-        transform:
-            translateX(15px)
-            perspective(280px)
-            rotateX(60deg)
-            scaleX(1.1);
-    }
-
-}
-
-
 /* =========================================================
-   真正明显的动态波浪
-========================================================= */
-
-.wave{
-    position:absolute;
-
-    left:-50%;
-
-    width:200%;
-
-    border-radius:45%;
-
-    transform-origin:center;
-}
-
-
-/* 最远层 */
-
-.wave1{
-    height:95px;
-
-    top:38px;
-
-    background:
-        rgba(255,255,255,.16);
-
-    animation:
-        waveMove1 7s linear infinite;
-}
-
-
-/* 第二层 */
-
-.wave2{
-    height:120px;
-
-    top:78px;
-
-    background:
-        rgba(255,255,255,.23);
-
-    animation:
-        waveMove2 9s linear infinite;
-}
-
-
-/* 第三层 */
-
-.wave3{
-    height:140px;
-
-    top:115px;
-
-    background:
-        rgba(103,219,218,.50);
-
-    animation:
-        waveMove3 11s linear infinite;
-}
-
-
-/* 前景浪 */
-
-.wave4{
-    height:170px;
-
-    top:150px;
-
-    background:
-        rgba(5,110,120,.72);
-
-    animation:
-        waveMove4 13s linear infinite;
-}
-
-
-@keyframes waveMove1{
-
-    0%{
-        transform:
-            translateX(0)
-            rotate(0deg);
-    }
-
-    50%{
-        transform:
-            translateX(7%)
-            rotate(1deg);
-    }
-
-    100%{
-        transform:
-            translateX(0)
-            rotate(0deg);
-    }
-
-}
-
-
-@keyframes waveMove2{
-
-    0%{
-        transform:
-            translateX(7%)
-            rotate(-1deg);
-    }
-
-    50%{
-        transform:
-            translateX(-4%)
-            rotate(1deg);
-    }
-
-    100%{
-        transform:
-            translateX(7%)
-            rotate(-1deg);
-    }
-
-}
-
-
-@keyframes waveMove3{
-
-    0%{
-        transform:
-            translateX(-5%)
-            scaleY(.95);
-    }
-
-    50%{
-        transform:
-            translateX(5%)
-            scaleY(1.08);
-    }
-
-    100%{
-        transform:
-            translateX(-5%)
-            scaleY(.95);
-    }
-
-}
-
-
-@keyframes waveMove4{
-
-    0%{
-        transform:
-            translateX(3%)
-            rotate(.5deg);
-    }
-
-    50%{
-        transform:
-            translateX(-5%)
-            rotate(-.5deg);
-    }
-
-    100%{
-        transform:
-            translateX(3%)
-            rotate(.5deg);
-    }
-
-}
-
-
-/* =========================================================
-   椰树
-========================================================= */
-
-.palm{
-    position:absolute;
-
-    z-index:9;
-
-    bottom:-15px;
-
-    transform-origin:bottom center;
-
-    filter:
-        drop-shadow(
-            0 20px 22px rgba(19,73,70,.22)
-        );
-}
-
-
-.palm-left{
-    left:-20px;
-
-    width:250px;
-    height:360px;
-
-    animation:
-        palmLeft 4.8s ease-in-out infinite alternate;
-}
-
-
-.palm-right{
-    right:-25px;
-
-    width:210px;
-    height:310px;
-
-    transform:scaleX(-1);
-
-    animation:
-        palmRight 5.4s ease-in-out infinite alternate;
-}
-
-
-@keyframes palmLeft{
-
-    from{
-        transform:
-            rotate(-2deg);
-    }
-
-    to{
-        transform:
-            rotate(3deg);
-    }
-
-}
-
-
-@keyframes palmRight{
-
-    from{
-        transform:
-            scaleX(-1)
-            rotate(-2deg);
-    }
-
-    to{
-        transform:
-            scaleX(-1)
-            rotate(2.5deg);
-    }
-
-}
-
-
-.palm path{
-    fill:#145e58;
-}
-
-
-/* =========================================================
-   HERO 内容
-========================================================= */
-
-.hero-content{
-    position:relative;
-
-    z-index:20;
-
-    width:min(
-        1400px,
-        calc(100% - 40px)
-    );
-
-    margin:auto;
-
-    padding-top:70px;
-}
-
-
-.hero-tag{
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    padding:
-        8px 13px;
-
-    border-radius:999px;
-
-    background:
-        rgba(255,255,255,.45);
-
-    border:
-        1px solid rgba(255,255,255,.50);
-
-    backdrop-filter:
-        blur(16px);
-
-    color:#336a6c;
-
-    font-size:11px;
-
-    letter-spacing:.14em;
-}
-
-
-.hero-tag-dot{
-    width:7px;
-    height:7px;
-
-    border-radius:50%;
-
-    background:#2eaaa5;
-
-    box-shadow:
-        0 0 12px #62d8cf;
-}
-
-
-.hero-title{
-    margin:
-        20px 0 0;
-
-    font-size:
-        clamp(
-            54px,
-            8vw,
-            104px
-        );
-
-    line-height:.90;
-
-    letter-spacing:-.07em;
-
-    color:#17373b;
-
-    font-weight:750;
-}
-
-
-.hero-title span{
-    color:#fff9ec;
-
-    text-shadow:
-        0 8px 25px rgba(31,93,91,.15);
-}
-
-
-.hero-subtitle{
-    margin-top:19px;
-
-    font-size:15px;
-
-    color:
-        rgba(31,75,78,.77);
-
-    letter-spacing:.03em;
-}
-
-
-/* =========================================================
-   内容区域
+   MAIN
 ========================================================= */
 
 .app{
+    width:min(1480px,calc(100% - 48px));
+
+    margin:-62px auto 90px;
+
     position:relative;
-
-    z-index:30;
-
-    width:min(
-        1400px,
-        calc(100% - 34px)
-    );
-
-    margin:
-        -45px auto
-        80px;
+    z-index:10;
 }
 
 
 /* =========================================================
-   毛玻璃
-========================================================= */
-
-.glass{
-    background:
-        var(--whiteGlass);
-
-    border:
-        1px solid
-        rgba(255,255,255,.85);
-
-    box-shadow:
-        var(--shadow);
-
-    backdrop-filter:
-        blur(28px)
-        saturate(125%);
-
-    -webkit-backdrop-filter:
-        blur(28px)
-        saturate(125%);
-}
-
-
-/* =========================================================
-   统计卡
+   STATS
 ========================================================= */
 
 .stats{
     display:grid;
 
     grid-template-columns:
-        1.55fr
+        1.45fr
         repeat(3,1fr);
 
-    gap:14px;
+    gap:16px;
 
-    margin-bottom:16px;
+    margin-bottom:18px;
 }
 
 
-.stat{
-    min-height:150px;
+.stat-card{
+    min-height:172px;
 
-    padding:22px;
+    padding:25px 27px;
 
-    border-radius:24px;
+    border-radius:var(--radius-lg);
+
+    background:rgba(255,253,249,.94);
+
+    border:1px solid rgba(255,255,255,.92);
+
+    box-shadow:var(--shadow);
 
     position:relative;
-
     overflow:hidden;
 
     transition:
-        transform .26s ease,
-        box-shadow .26s ease;
+        transform .28s ease,
+        box-shadow .28s ease;
 }
 
 
-.stat:hover{
-    transform:
-        translateY(-6px);
-
-    box-shadow:
-        0 30px 75px
-        rgba(44,91,94,.19);
+.stat-card:hover{
+    transform:translateY(-5px);
+    box-shadow:var(--shadow-hover);
 }
 
 
-.stat::after{
-    content:"";
+.stat-card.primary{
+    background:
+        linear-gradient(
+            135deg,
+            #183f3b,
+            #235b55
+        );
 
+    color:#fff;
+}
+
+
+.stat-label{
+    font-size:12px;
+
+    font-weight:700;
+
+    letter-spacing:.13em;
+
+    color:var(--muted);
+}
+
+
+.primary .stat-label{
+    color:rgba(255,255,255,.58);
+}
+
+
+.stat-value{
+    margin-top:17px;
+
+    font-size:
+        clamp(
+            34px,
+            3.7vw,
+            52px
+        );
+
+    font-weight:620;
+
+    letter-spacing:-.045em;
+
+    line-height:1;
+}
+
+
+.primary .stat-value{
+    color:#f6e2ba;
+}
+
+
+.stat-caption{
+    margin-top:13px;
+
+    font-size:15px;
+
+    color:var(--ink-soft);
+}
+
+
+.primary .stat-caption{
+    color:rgba(255,255,255,.68);
+}
+
+
+.stat-decoration{
     position:absolute;
+
+    right:-35px;
+    bottom:-50px;
 
     width:150px;
     height:150px;
-
-    right:-55px;
-    bottom:-70px;
 
     border-radius:50%;
 
     background:
         radial-gradient(
             circle,
-            rgba(57,184,178,.16),
+            rgba(215,188,139,.20),
             transparent 67%
         );
 }
 
 
-.stat-label{
-    font-size:10px;
-
-    letter-spacing:.15em;
-
-    color:#8aa0a3;
-}
-
-
-.stat-value{
-    margin-top:13px;
-
-    font-size:
-        clamp(
-            28px,
-            3.8vw,
-            48px
-        );
-
-    letter-spacing:-.045em;
-
-    font-weight:730;
-
-    color:#203e42;
-}
-
-
-.stat:first-child
-.stat-value{
-    color:#227e7d;
-}
-
-
-.stat-caption{
-    margin-top:7px;
-
-    font-size:12px;
-
-    color:#8a9d9f;
-}
-
-
 /* =========================================================
-   Panel
+   PANEL
 ========================================================= */
 
 .panel{
-    margin-bottom:16px;
+    margin-bottom:18px;
 
-    padding:24px;
+    padding:30px;
 
-    border-radius:28px;
+    border-radius:var(--radius-xl);
+
+    background:rgba(255,253,249,.96);
+
+    border:1px solid rgba(255,255,255,.90);
+
+    box-shadow:var(--shadow);
 }
 
 
-.panel-head{
+.panel-header{
     display:flex;
+    align-items:center;
+    justify-content:space-between;
 
-    justify-content:
-        space-between;
+    gap:18px;
 
+    margin-bottom:25px;
+}
+
+
+.panel-heading{
+    display:flex;
     align-items:center;
 
     gap:15px;
-
-    margin-bottom:20px;
-}
-
-
-.panel-title{
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
 }
 
 
 .panel-icon{
-    width:45px;
-    height:45px;
+    width:48px;
+    height:48px;
 
     display:grid;
-
     place-items:center;
 
-    border-radius:14px;
+    border-radius:15px;
 
-    color:#fff;
+    background:#edf3ef;
+
+    color:var(--ocean);
+
+    font-size:22px;
+    font-weight:400;
+}
+
+
+.panel-heading h2,
+.panel-heading h3{
+    margin:0;
 
     font-size:22px;
 
-    background:
-        linear-gradient(
-            145deg,
-            #46c4bd,
-            #238e94
-        );
+    font-weight:650;
 
-    box-shadow:
-        0 12px 25px
-        rgba(57,175,172,.22);
+    letter-spacing:-.025em;
 }
 
 
-.panel-title h2,
-.panel-title h3{
-    margin:0;
-
-    font-size:18px;
-
-    color:#234349;
-}
-
-
-.panel-title p{
+.panel-heading p{
     margin:
-        4px 0 0;
+        5px 0 0;
 
-    font-size:11px;
+    color:var(--muted);
 
-    color:#91a2a4;
+    font-size:14px;
 }
 
 
 /* =========================================================
-   表单
+   FORM
 ========================================================= */
 
 .form-grid{
     display:grid;
 
     grid-template-columns:
-        repeat(
-            6,
-            minmax(130px,1fr)
-        );
+        repeat(6,minmax(130px,1fr));
 
-    gap:11px;
+    gap:14px;
 }
 
 
 .field{
     display:flex;
-
     flex-direction:column;
 
-    gap:7px;
+    gap:9px;
 }
 
 
 .field label{
-    padding-left:3px;
+    color:#516764;
 
-    font-size:11px;
+    font-size:14px;
 
     font-weight:600;
-
-    color:#7d9699;
 }
 
 
 .input,
 .select{
     width:100%;
-
-    height:48px;
+    height:53px;
 
     padding:
-        0 14px;
+        0 15px;
+
+    border:1px solid #dce4e1;
 
     border-radius:14px;
 
-    border:
-        1px solid
-        #dbe7e6;
-
-    background:
-        rgba(255,255,255,.70);
-
-    color:#28484c;
+    background:#fbfaf6;
 
     outline:none;
 
-    font-size:13px;
+    color:#203e3a;
 
-    transition:.2s;
+    font-size:15px;
+
+    transition:
+        border .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
 }
 
 
 .input::placeholder{
-    color:#acbcbd;
+    color:#a1afac;
 }
 
 
 .input:focus,
 .select:focus{
-    border-color:#6fcac5;
+    background:#fff;
+
+    border-color:#739b91;
 
     box-shadow:
         0 0 0 4px
-        rgba(86,195,190,.11);
-
-    background:#fff;
+        rgba(69,118,106,.09);
 }
 
 
 .form-actions{
     display:flex;
 
-    gap:9px;
+    gap:10px;
 
-    margin-top:17px;
+    margin-top:22px;
 }
 
 
 /* =========================================================
-   Buttons
+   BUTTONS
 ========================================================= */
 
 .btn{
-    min-height:44px;
+    min-height:48px;
 
     padding:
-        0 17px;
+        0 19px;
 
-    border:none;
+    border:0;
 
     border-radius:13px;
 
     display:inline-flex;
-
+    align-items:center;
     justify-content:center;
 
-    align-items:center;
-
-    gap:7px;
+    gap:8px;
 
     cursor:pointer;
 
-    font-size:13px;
+    font-size:15px;
 
     font-weight:650;
 
-    transition:.24s ease;
+    transition:
+        transform .20s ease,
+        box-shadow .20s ease,
+        background .20s ease;
+}
+
+
+.btn:hover{
+    transform:translateY(-2px);
 }
 
 
 .btn-primary{
-    color:white;
+    color:#fff;
 
     background:
         linear-gradient(
             135deg,
-            #43c4bc,
-            #208e95
+            #245e57,
+            #174641
         );
 
     box-shadow:
-        0 11px 24px
-        rgba(46,165,164,.21);
+        0 10px 24px
+        rgba(25,71,64,.18);
 }
 
 
 .btn-primary:hover{
-    transform:
-        translateY(-3px);
-
     box-shadow:
-        0 17px 30px
-        rgba(46,165,164,.30);
+        0 15px 30px
+        rgba(25,71,64,.25);
 }
 
 
 .btn-secondary{
-    color:#46666a;
+    color:#425f5b;
 
-    background:
-        rgba(255,255,255,.67);
+    background:#f2f4ef;
 
-    border:
-        1px solid
-        #dae7e6;
+    border:1px solid #dde5e1;
 }
 
 
 .btn-secondary:hover{
-    transform:
-        translateY(-2px);
+    background:#e9eeea;
+}
 
-    background:white;
+
+.btn-danger{
+    color:var(--red);
+
+    background:#fbefef;
+}
+
+
+.btn:disabled{
+    opacity:.55;
+    cursor:wait;
+    transform:none;
 }
 
 
 /* =========================================================
-   Toolbar
+   TOOLBAR
 ========================================================= */
 
 .toolbar{
     display:flex;
-
-    justify-content:
-        space-between;
-
     align-items:center;
+    justify-content:space-between;
 
-    gap:15px;
+    gap:16px;
 
-    margin-bottom:16px;
+    margin-bottom:18px;
 }
 
 
 .toolbar-title h3{
     margin:0;
 
-    color:#25474b;
+    font-size:22px;
 
-    font-size:18px;
+    font-weight:650;
 }
 
 
 .toolbar-title p{
     margin:
-        5px 0 0;
+        6px 0 0;
 
-    font-size:11px;
+    color:var(--muted);
 
-    color:#91a4a6;
+    font-size:14px;
 }
 
 
-.toolbar-right{
+.toolbar-actions{
     display:flex;
 
-    gap:8px;
+    gap:9px;
 
     flex-wrap:wrap;
 }
 
 
-.search-wrap{
+.search{
     position:relative;
 }
 
 
-.search-wrap span{
+.search-icon{
     position:absolute;
 
-    left:13px;
-
+    left:15px;
     top:50%;
 
-    transform:
-        translateY(-50%);
+    transform:translateY(-50%);
 
-    color:#8ba3a5;
+    color:#83928f;
+
+    font-size:16px;
 }
 
 
 .search-input{
-    width:260px;
-
-    height:44px;
+    width:315px;
+    height:48px;
 
     padding:
-        0 13px 0 39px;
+        0 16px 0 43px;
 
-    border-radius:14px;
+    border:1px solid #dce5e2;
 
-    border:
-        1px solid
-        #dbe7e6;
-
-    background:
-        rgba(255,255,255,.67);
+    border-radius:13px;
 
     outline:none;
 
-    color:#345458;
+    background:#fbfaf6;
+
+    color:#304c48;
+
+    font-size:15px;
+}
+
+
+.search-input::placeholder{
+    color:#a2aeac;
 }
 
 
 /* =========================================================
-   Table
+   TABLE
 ========================================================= */
 
-.table-wrap{
+.table-shell{
     overflow:auto;
 
-    border-radius:18px;
-
     border:
-        1px solid #e1ebea;
+        1px solid #e1e8e5;
 
-    background:
-        rgba(255,255,255,.45);
+    border-radius:20px;
+
+    background:#fff;
 }
 
 
 table{
     width:100%;
 
-    min-width:1100px;
+    min-width:1220px;
 
     border-collapse:collapse;
 }
 
 
+thead{
+    background:#f6f5f0;
+}
+
+
 th{
     padding:
-        13px 12px;
+        17px 16px;
 
     text-align:left;
 
-    font-size:10px;
+    color:#748480;
 
-    letter-spacing:.08em;
+    font-size:13px;
 
-    color:#879b9e;
+    font-weight:700;
 
-    background:
-        rgba(243,249,248,.90);
+    letter-spacing:.035em;
 
-    position:sticky;
-
-    top:0;
-
-    z-index:2;
+    white-space:nowrap;
 }
 
 
 td{
     padding:
-        14px 12px;
+        19px 16px;
 
     border-top:
-        1px solid #e7eeee;
+        1px solid #edf0ee;
 
-    font-size:12px;
+    color:#3c5652;
 
-    color:#49666a;
+    font-size:15px;
+
+    line-height:1.45;
+
+    vertical-align:middle;
 }
 
 
 tbody tr{
     transition:
-        background .18s;
+        background .18s ease;
 }
 
 
 tbody tr:hover{
-    background:
-        rgba(228,246,244,.60);
+    background:#fafaf6;
+}
+
+
+.row-number{
+    color:#99a5a2;
+
+    font-weight:600;
 }
 
 
 .price{
-    color:#278b87;
+    color:#235d54;
+
+    font-size:16px;
 
     font-weight:700;
+
+    white-space:nowrap;
+}
+
+
+.email-cell{
+    max-width:260px;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
 }
 
 
 /* =========================================================
-   Badge
+   BADGES
 ========================================================= */
 
 .badge{
@@ -1254,132 +945,171 @@ tbody tr:hover{
 
     align-items:center;
 
-    gap:6px;
+    gap:7px;
 
     padding:
-        6px 9px;
+        7px 11px;
 
     border-radius:999px;
 
-    font-size:10px;
+    font-size:13px;
 
-    font-weight:600;
+    font-weight:650;
+
+    white-space:nowrap;
 }
 
 
 .badge::before{
     content:"";
 
-    width:6px;
-    height:6px;
+    width:7px;
+    height:7px;
 
     border-radius:50%;
 }
 
 
 .badge-ok{
-    color:#288765;
-
-    background:#e5f8ef;
+    color:var(--green);
+    background:var(--green-soft);
 }
 
-
 .badge-ok::before{
-    background:#3eaf81;
+    background:#58a486;
 }
 
 
 .badge-warning{
-    color:#aa7a25;
-
-    background:#fff4dc;
+    color:var(--amber);
+    background:var(--amber-soft);
 }
 
-
 .badge-warning::before{
-    background:#e4ae4f;
+    background:#cf9a3c;
 }
 
 
 .badge-expired{
-    color:#b65b5b;
-
-    background:#fdeaea;
+    color:var(--red);
+    background:var(--red-soft);
 }
 
-
 .badge-expired::before{
-    background:#d97676;
+    background:#cd7272;
 }
 
 
 .badge-deleted{
-    color:#89999b;
-
-    background:#edf1f1;
+    color:#7b8886;
+    background:#eff1ef;
 }
 
-
 .badge-deleted::before{
-    background:#96a4a5;
+    background:#98a39f;
 }
 
 
 /* =========================================================
-   Small Buttons
+   ROW ACTIONS
 ========================================================= */
 
-.actions{
+.row-actions{
     display:flex;
 
-    gap:5px;
+    gap:6px;
 
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
 }
 
 
-.small{
+.mini-btn{
+    height:36px;
+
     padding:
-        6px 9px;
+        0 11px;
 
-    border-radius:8px;
+    border-radius:10px;
 
-    border:
-        1px solid #dce7e6;
+    border:1px solid #dde5e2;
 
-    background:
-        rgba(255,255,255,.75);
+    background:#fff;
 
-    color:#597477;
+    color:#536c68;
+
+    font-size:13px;
+
+    font-weight:600;
 
     cursor:pointer;
 
-    font-size:10px;
+    white-space:nowrap;
+
+    transition:
+        background .18s ease,
+        border .18s ease;
 }
 
 
-.small:hover{
-    background:#fff;
+.mini-btn:hover{
+    background:#f1f5f2;
 }
 
 
-.small.edit{
-    color:#278f89;
+.mini-btn.edit{
+    color:#2c7468;
 }
 
 
-.small.danger{
-    color:#bd6868;
+.mini-btn.delete{
+    color:#ae5c5c;
 }
 
 
 /* =========================================================
-   Modal
+   EMPTY STATE
+========================================================= */
+
+.empty-state{
+    display:none;
+
+    padding:
+        75px 20px;
+
+    text-align:center;
+
+    color:#889995;
+
+    font-size:15px;
+}
+
+
+.empty-circle{
+    width:52px;
+    height:52px;
+
+    display:grid;
+    place-items:center;
+
+    margin:
+        0 auto 14px;
+
+    border-radius:50%;
+
+    background:#edf2ee;
+
+    color:#67807a;
+
+    font-size:21px;
+}
+
+
+/* =========================================================
+   MODAL
 ========================================================= */
 
 .modal-mask{
     position:fixed;
-
     inset:0;
 
     z-index:100;
@@ -1387,16 +1117,13 @@ tbody tr:hover{
     display:none;
 
     align-items:center;
-
     justify-content:center;
 
-    padding:20px;
+    padding:22px;
 
-    background:
-        rgba(24,57,61,.42);
+    background:rgba(13,35,32,.42);
 
-    backdrop-filter:
-        blur(13px);
+    backdrop-filter:blur(12px);
 }
 
 
@@ -1406,58 +1133,75 @@ tbody tr:hover{
 
 
 .modal{
-    width:
-        min(
-            720px,
-            100%
-        );
+    width:min(760px,100%);
 
-    padding:23px;
+    max-height:
+        calc(100vh - 44px);
 
-    border-radius:26px;
+    overflow:auto;
 
-    background:
-        rgba(255,255,255,.94);
+    padding:28px;
 
-    border:
-        1px solid white;
+    border-radius:28px;
+
+    background:#fffdf9;
 
     box-shadow:
-        0 35px 90px
-        rgba(35,80,84,.28);
+        0 35px 90px rgba(28,52,47,.25);
+
+    animation:
+        modalIn .24s ease;
 }
 
 
-.modal-head{
+@keyframes modalIn{
+    from{
+        opacity:0;
+        transform:
+            translateY(16px)
+            scale(.98);
+    }
+
+    to{
+        opacity:1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+.modal-header{
     display:flex;
-
-    justify-content:
-        space-between;
-
     align-items:center;
+    justify-content:space-between;
 
-    margin-bottom:18px;
+    margin-bottom:23px;
 }
 
 
-.modal-head h3{
+.modal-header h3{
     margin:0;
 
-    color:#25494d;
+    font-size:23px;
+
+    font-weight:650;
 }
 
 
-.close{
-    width:37px;
-    height:37px;
+.modal-close{
+    width:40px;
+    height:40px;
 
-    border:none;
+    border:0;
 
-    border-radius:11px;
+    border-radius:12px;
 
-    background:#edf4f3;
+    background:#f0f3ef;
 
-    color:#456568;
+    color:#526a65;
+
+    font-size:20px;
 
     cursor:pointer;
 }
@@ -1469,7 +1213,7 @@ tbody tr:hover{
     grid-template-columns:
         repeat(2,1fr);
 
-    gap:12px;
+    gap:15px;
 }
 
 
@@ -1478,118 +1222,111 @@ tbody tr:hover{
 
     justify-content:flex-end;
 
-    gap:8px;
+    gap:10px;
 
-    margin-top:19px;
+    margin-top:24px;
 }
 
 
 /* =========================================================
-   Toast
+   TOAST
 ========================================================= */
 
-.toast-box{
+.toast-stack{
     position:fixed;
 
-    top:20px;
-    right:20px;
+    right:22px;
+    top:22px;
 
-    z-index:300;
+    z-index:200;
 
     display:flex;
-
     flex-direction:column;
 
-    gap:8px;
+    gap:9px;
 }
 
 
 .toast{
-    width:
-        min(
-            350px,
-            calc(100vw - 40px)
-        );
+    width:min(
+        390px,
+        calc(100vw - 44px)
+    );
 
     padding:
-        14px 16px;
+        15px 17px;
 
-    border-radius:15px;
+    border-radius:14px;
 
-    color:#24464a;
+    background:rgba(255,253,249,.96);
 
-    background:
-        rgba(255,255,255,.93);
-
-    border:
-        1px solid white;
+    color:#314d48;
 
     box-shadow:
-        0 18px 45px
-        rgba(38,82,85,.19);
+        0 20px 55px
+        rgba(36,61,55,.16);
 
-    backdrop-filter:blur(20px);
+    border:
+        1px solid rgba(255,255,255,.95);
 
-    font-size:12px;
+    backdrop-filter:blur(18px);
+
+    font-size:14px;
 
     animation:
-        toastIn .25s ease;
+        toastIn .23s ease;
 }
 
 
 .toast.success{
     border-left:
-        4px solid #49b98f;
+        4px solid #4d997d;
 }
 
 
 .toast.error{
     border-left:
-        4px solid #e27979;
+        4px solid #c76c6c;
 }
 
 
 @keyframes toastIn{
-
     from{
         opacity:0;
-
         transform:
-            translateX(20px);
+            translateX(18px);
     }
 
     to{
         opacity:1;
-
         transform:
             translateX(0);
     }
-
 }
 
 
 /* =========================================================
-   Footer
+   FOOTER
 ========================================================= */
 
 .footer{
-    margin-top:20px;
+    padding-top:8px;
 
     text-align:center;
 
-    font-size:10px;
+    color:#99a49f;
 
-    color:#9cadad;
+    font-size:12px;
 
-    letter-spacing:.13em;
+    letter-spacing:.12em;
 }
 
 
 /* =========================================================
-   响应式
+   RESPONSIVE
 ========================================================= */
 
-@media(max-width:1100px){
+@media(max-width:1150px){
 
     .stats{
         grid-template-columns:
@@ -1604,41 +1341,55 @@ tbody tr:hover{
 }
 
 
-@media(max-width:720px){
+@media(max-width:760px){
 
     .hero{
-        height:410px;
+        height:500px;
     }
 
-    .hero-content{
-        padding-top:55px;
+    .hero-inner{
+        width:
+            calc(100% - 36px);
+
+        justify-content:flex-end;
+
+        padding-bottom:105px;
     }
 
     .hero-title{
-        font-size:58px;
+        font-size:
+            clamp(47px,15vw,66px);
     }
 
-    .sun{
-        width:100px;
-        height:100px;
-
-        right:7%;
-        left:auto;
+    .hero-copy{
+        font-size:16px;
+        line-height:1.65;
     }
 
-    .palm-left{
-        width:180px;
-        height:285px;
-    }
+    .app{
+        width:
+            calc(100% - 22px);
 
-    .palm-right{
-        width:150px;
-        height:245px;
+        margin-top:-55px;
     }
 
     .stats{
         grid-template-columns:
             repeat(2,1fr);
+
+        gap:10px;
+    }
+
+    .stat-card{
+        min-height:145px;
+
+        padding:20px;
+    }
+
+    .panel{
+        padding:20px;
+
+        border-radius:24px;
     }
 
     .form-grid{
@@ -1647,16 +1398,15 @@ tbody tr:hover{
     }
 
     .toolbar{
-        flex-direction:column;
-
         align-items:flex-start;
+        flex-direction:column;
     }
 
-    .toolbar-right{
+    .toolbar-actions{
         width:100%;
     }
 
-    .search-wrap{
+    .search{
         width:100%;
     }
 
@@ -1667,10 +1417,18 @@ tbody tr:hover{
 }
 
 
-@media(max-width:480px){
+@media(max-width:500px){
 
-    .hero-title{
-        font-size:48px;
+    .hero{
+        height:470px;
+    }
+
+    .hero-kicker{
+        font-size:11px;
+    }
+
+    .hero-copy{
+        max-width:330px;
     }
 
     .stats{
@@ -1685,8 +1443,12 @@ tbody tr:hover{
         grid-template-columns:1fr;
     }
 
-    .panel{
-        padding:16px;
+    .form-actions{
+        flex-direction:column;
+    }
+
+    .form-actions .btn{
+        width:100%;
     }
 
 }
@@ -1698,194 +1460,61 @@ tbody tr:hover{
 <body>
 
 
-<!-- =======================================================
-     海岛 HERO
-======================================================= -->
+<!-- =========================================================
+     HERO
+========================================================= -->
 
 <section class="hero">
 
-    <div class="sun"></div>
+    <div class="hero-photo"></div>
+    <div class="hero-overlay"></div>
+    <div class="water-light"></div>
+    <div class="hero-glow"></div>
 
-    <div class="cloud cloud1"></div>
-    <div class="cloud cloud2"></div>
+    <div class="hero-inner">
 
-
-    <!-- 海水 -->
-
-    <div class="ocean">
-
-        <div class="sun-path"></div>
-
-        <div class="wave wave1"></div>
-
-        <div class="wave wave2"></div>
-
-        <div class="wave wave3"></div>
-
-        <div class="wave wave4"></div>
-
-    </div>
-
-
-    <!-- 左椰树 -->
-
-    <svg
-        class="palm palm-left"
-        viewBox="0 0 260 400"
-    >
-
-        <path d="
-        M115 400
-        C122 335 132 272 128 211
-        C125 164 112 128 104 95
-        L122 90
-        C137 133 145 170 145 215
-        C145 280 141 340 133 400 Z
-        "/>
-
-        <path d="
-        M112 100
-        C78 66 39 55 4 65
-        C36 85 73 98 112 106 Z
-        "/>
-
-        <path d="
-        M113 98
-        C67 87 34 101 9 132
-        C53 126 85 117 114 105 Z
-        "/>
-
-        <path d="
-        M114 96
-        C87 49 59 23 22 15
-        C50 54 80 81 115 104 Z
-        "/>
-
-        <path d="
-        M116 94
-        C127 43 151 14 185 3
-        C169 43 148 75 121 103 Z
-        "/>
-
-        <path d="
-        M120 98
-        C163 54 205 42 254 52
-        C208 71 164 89 120 106 Z
-        "/>
-
-        <path d="
-        M121 101
-        C167 89 208 97 248 123
-        C200 121 162 116 121 108 Z
-        "/>
-
-    </svg>
-
-
-    <!-- 右椰树 -->
-
-    <svg
-        class="palm palm-right"
-        viewBox="0 0 260 400"
-    >
-
-        <path d="
-        M115 400
-        C122 335 132 272 128 211
-        C125 164 112 128 104 95
-        L122 90
-        C137 133 145 170 145 215
-        C145 280 141 340 133 400 Z
-        "/>
-
-        <path d="
-        M112 100
-        C78 66 39 55 4 65
-        C36 85 73 98 112 106 Z
-        "/>
-
-        <path d="
-        M113 98
-        C67 87 34 101 9 132
-        C53 126 85 117 114 105 Z
-        "/>
-
-        <path d="
-        M114 96
-        C87 49 59 23 22 15
-        C50 54 80 81 115 104 Z
-        "/>
-
-        <path d="
-        M116 94
-        C127 43 151 14 185 3
-        C169 43 148 75 121 103 Z
-        "/>
-
-        <path d="
-        M120 98
-        C163 54 205 42 254 52
-        C208 71 164 89 120 106 Z
-        "/>
-
-        <path d="
-        M121 101
-        C167 89 208 97 248 123
-        C200 121 162 116 121 108 Z
-        "/>
-
-    </svg>
-
-
-    <!-- 标题 -->
-
-    <div class="hero-content">
-
-        <div class="hero-tag">
-
-            <span class="hero-tag-dot"></span>
-
-            SANYA DREAM · SALES DASHBOARD
-
+        <div class="hero-kicker">
+            SANYA · PRIVATE SALES
         </div>
 
         <h1 class="hero-title">
-
-            挣钱上<span>三亚</span>
-
+            挣钱上<strong>三亚</strong>
         </h1>
 
-        <div class="hero-subtitle">
-
-            每成交一个项目，就离阳光、椰林和大海更近一点。
-
-        </div>
+        <p class="hero-copy">
+            认真记录每一次成交。<br>
+            我们要去的地方，有阳光、有椰树，也有海。
+        </p>
 
     </div>
+
+    <div class="hero-bottom"></div>
 
 </section>
 
 
 
 <div
-    class="toast-box"
-    id="toastBox"
+    class="toast-stack"
+    id="toastStack"
 ></div>
 
 
 
-<!-- =======================================================
-     主体
-======================================================= -->
+<!-- =========================================================
+     APP
+========================================================= -->
 
 <main class="app">
 
 
-<!-- 统计 -->
+<!-- =========================================================
+     STATS
+========================================================= -->
 
 <section class="stats">
 
-    <div class="stat glass">
+    <article class="stat-card primary">
 
         <div class="stat-label">
             TOTAL REVENUE
@@ -1902,10 +1531,12 @@ tbody tr:hover{
             累计销售金额
         </div>
 
-    </div>
+        <div class="stat-decoration"></div>
+
+    </article>
 
 
-    <div class="stat glass">
+    <article class="stat-card">
 
         <div class="stat-label">
             PROJECTS
@@ -1922,10 +1553,12 @@ tbody tr:hover{
             全部销售项目
         </div>
 
-    </div>
+        <div class="stat-decoration"></div>
+
+    </article>
 
 
-    <div class="stat glass">
+    <article class="stat-card">
 
         <div class="stat-label">
             ACTIVE
@@ -1942,10 +1575,12 @@ tbody tr:hover{
             当前有效项目
         </div>
 
-    </div>
+        <div class="stat-decoration"></div>
+
+    </article>
 
 
-    <div class="stat glass">
+    <article class="stat-card">
 
         <div class="stat-label">
             ARCHIVED
@@ -1962,22 +1597,26 @@ tbody tr:hover{
             已标记删除
         </div>
 
-    </div>
+        <div class="stat-decoration"></div>
+
+    </article>
 
 </section>
 
 
 
-<!-- 新增销售 -->
+<!-- =========================================================
+     CREATE
+========================================================= -->
 
-<section class="panel glass">
+<section class="panel">
 
-    <div class="panel-head">
+    <div class="panel-header">
 
-        <div class="panel-title">
+        <div class="panel-heading">
 
             <div class="panel-icon">
-                +
+                ＋
             </div>
 
             <div>
@@ -1987,7 +1626,7 @@ tbody tr:hover{
                 </h2>
 
                 <p>
-                    数据实时同步至共享 Supabase
+                    保存后自动同步至共享数据库
                 </p>
 
             </div>
@@ -1998,6 +1637,7 @@ tbody tr:hover{
 
 
     <div class="form-grid">
+
 
         <div class="field">
 
@@ -2055,6 +1695,7 @@ tbody tr:hover{
             <input
                 class="input"
                 id="buyerEmail"
+                type="text"
                 placeholder="buyer@example.com"
             >
 
@@ -2070,7 +1711,8 @@ tbody tr:hover{
             <input
                 class="input"
                 id="projectNo"
-                placeholder="项目编号"
+                type="text"
+                placeholder="输入项目编号"
             >
 
         </div>
@@ -2106,6 +1748,7 @@ tbody tr:hover{
 
         </div>
 
+
     </div>
 
 
@@ -2115,7 +1758,7 @@ tbody tr:hover{
             class="btn btn-primary"
             id="btnAdd"
         >
-            ＋ 新增记录
+            ＋ 新增销售记录
         </button>
 
         <button
@@ -2131,9 +1774,11 @@ tbody tr:hover{
 
 
 
-<!-- 销售记录 -->
+<!-- =========================================================
+     DATA
+========================================================= -->
 
-<section class="panel glass">
+<section class="panel">
 
     <div class="toolbar">
 
@@ -2150,17 +1795,19 @@ tbody tr:hover{
         </div>
 
 
-        <div class="toolbar-right">
+        <div class="toolbar-actions">
 
+            <div class="search">
 
-            <div class="search-wrap">
-
-                <span>⌕</span>
+                <span class="search-icon">
+                    ⌕
+                </span>
 
                 <input
                     class="search-input"
                     id="searchInput"
-                    placeholder="搜索邮箱 / 项目号 / 操作人"
+                    type="text"
+                    placeholder="搜索邮箱、项目号或操作人"
                 >
 
             </div>
@@ -2181,14 +1828,12 @@ tbody tr:hover{
                 ↓ 导出 CSV
             </button>
 
-
         </div>
 
     </div>
 
 
-
-    <div class="table-wrap">
+    <div class="table-shell">
 
         <table>
 
@@ -2215,16 +1860,29 @@ tbody tr:hover{
 
         </table>
 
+
+        <div
+            class="empty-state"
+            id="emptyState"
+        >
+
+            <div class="empty-circle">
+                ◌
+            </div>
+
+            暂时没有符合条件的销售记录
+
+        </div>
+
     </div>
 
 </section>
 
 
-<div class="footer">
 
+<div class="footer">
     SANYA DREAM FUND ·
     <span id="year"></span>
-
 </div>
 
 
@@ -2232,9 +1890,9 @@ tbody tr:hover{
 
 
 
-<!-- =======================================================
-     编辑弹窗
-======================================================= -->
+<!-- =========================================================
+     EDIT MODAL
+========================================================= -->
 
 <div
     class="modal-mask"
@@ -2243,14 +1901,15 @@ tbody tr:hover{
 
     <div class="modal">
 
-        <div class="modal-head">
+
+        <div class="modal-header">
 
             <h3>
                 编辑销售记录
             </h3>
 
             <button
-                class="close"
+                class="modal-close"
                 id="closeModal"
             >
                 ×
@@ -2295,13 +1954,14 @@ tbody tr:hover{
             <div class="field">
 
                 <label>
-                    售价
+                    售卖价格
                 </label>
 
                 <input
                     class="input"
                     id="editPrice"
                     type="number"
+                    step="0.01"
                 >
 
             </div>
@@ -2316,6 +1976,7 @@ tbody tr:hover{
                 <input
                     class="input"
                     id="editBuyerEmail"
+                    type="text"
                 >
 
             </div>
@@ -2330,6 +1991,7 @@ tbody tr:hover{
                 <input
                     class="input"
                     id="editProjectNo"
+                    type="text"
                 >
 
             </div>
@@ -2362,6 +2024,7 @@ tbody tr:hover{
 
             </div>
 
+
         </div>
 
 
@@ -2392,33 +2055,30 @@ tbody tr:hover{
 <script>
 
 /* =========================================================
-   Supabase
+   SUPABASE
 ========================================================= */
 
 const SUPABASE_URL =
-"https://dufemmclialublrxzwny.supabase.co";
-
+    "https://dufemmclialublrxzwny.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_G1lGo2yiVKzQeNFiJdG6Dg_HCdWFEFU";
+    "sb_publishable_G1lGo2yiVKzQeNFiJdG6Dg_HCdWFEFU";
 
 
-const {
-    createClient
-} = window.supabase;
+const { createClient } =
+    window.supabase;
 
 
 const sb =
-createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY,
-    {
-        db:{
-            schema:"public"
+    createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+        {
+            db:{
+                schema:"public"
+            }
         }
-    }
-);
-
+    );
 
 
 /* =========================================================
@@ -2426,54 +2086,61 @@ createClient(
 ========================================================= */
 
 const $ =
-s =>
-document.querySelector(s);
+    selector =>
+        document.querySelector(
+            selector
+        );
 
 
 const sellDate =
-$("#sellDate");
+    $("#sellDate");
 
 const expireDate =
-$("#expireDate");
+    $("#expireDate");
 
 const price =
-$("#price");
+    $("#price");
 
 const buyerEmail =
-$("#buyerEmail");
+    $("#buyerEmail");
 
 const projectNo =
-$("#projectNo");
+    $("#projectNo");
 
 const operator =
-$("#operator");
+    $("#operator");
 
 
 const tableBody =
-$("#tableBody");
+    $("#tableBody");
+
+const emptyState =
+    $("#emptyState");
 
 const searchInput =
-$("#searchInput");
+    $("#searchInput");
 
 const dbStatus =
-$("#dbStatus");
+    $("#dbStatus");
 
-const toastBox =
-$("#toastBox");
+const toastStack =
+    $("#toastStack");
 
 
 let allRows = [];
-
 let editingId = null;
 
 
 /* =========================================================
-   工具
+   UTILITIES
 ========================================================= */
 
-function safe(v){
+function escapeHtml(value){
 
-    return String(v ?? "")
+    return String(
+        value ?? ""
+    )
+
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
@@ -2483,78 +2150,108 @@ function safe(v){
 }
 
 
-function money(v){
+function formatMoney(value){
 
     return new Intl.NumberFormat(
         "zh-CN",
         {
             style:"currency",
             currency:"CNY",
-            minimumFractionDigits:2
+            minimumFractionDigits:2,
+            maximumFractionDigits:2
         }
     ).format(
-        Number(v || 0)
+        Number(
+            value || 0
+        )
     );
 
 }
 
 
-function toast(
+function showToast(
     text,
     type="success"
 ){
 
-    const el =
-    document.createElement("div");
-
-    el.className =
-    `toast ${type}`;
-
-    el.textContent =
-    text;
-
-    toastBox.appendChild(el);
+    const toast =
+        document.createElement(
+            "div"
+        );
 
 
-    setTimeout(
-        ()=>{
-            el.style.opacity="0";
-            el.style.transform="translateX(20px)";
-        },
-        2600
+    toast.className =
+        `toast ${type}`;
+
+
+    toast.textContent =
+        text;
+
+
+    toastStack.appendChild(
+        toast
     );
 
 
     setTimeout(
-        ()=>{
-            el.remove();
+        () => {
+
+            toast.style.opacity =
+                "0";
+
+            toast.style.transform =
+                "translateX(18px)";
+
         },
-        3000
+        2700
+    );
+
+
+    setTimeout(
+        () => {
+
+            toast.remove();
+
+        },
+        3100
     );
 
 }
 
 
-function daysLeft(v){
+function daysUntil(
+    dateString
+){
 
-    if(!v)
+    if(!dateString)
         return null;
 
 
     const today =
-    new Date();
-
-    today.setHours(0,0,0,0);
+        new Date();
 
 
-    const target =
-    new Date(
-        v+"T00:00:00"
+    today.setHours(
+        0,
+        0,
+        0,
+        0
     );
 
 
+    const target =
+        new Date(
+            dateString +
+            "T00:00:00"
+        );
+
+
     return Math.ceil(
-        (target-today)
+        (
+            target.getTime()
+            -
+            today.getTime()
+        )
         /
         86400000
     );
@@ -2562,57 +2259,63 @@ function daysLeft(v){
 }
 
 
-function statusOf(row){
+/* =========================================================
+   STATUS
+========================================================= */
+
+function getRowStatus(row){
 
     if(
-        row.is_deleted
-        ===
+        row.is_deleted ===
         "已删除"
     ){
 
         return {
             text:"已删除",
-            cls:"badge-deleted"
+            className:"badge-deleted"
         };
 
     }
 
 
-    const d =
-    daysLeft(
-        row.expire_date
-    );
+    const days =
+        daysUntil(
+            row.expire_date
+        );
 
 
     if(
-        d !== null
+        days !== null
         &&
-        d < 0
+        days < 0
     ){
 
         return {
             text:"已过期",
-            cls:"badge-expired"
+            className:"badge-expired"
         };
 
     }
 
 
     if(
-        d !== null
+        days !== null
         &&
-        d <= 7
+        days <= 7
     ){
 
         return {
-            text:
-            d === 0
-            ?
-            "今天到期"
-            :
-            `${d}天后到期`,
 
-            cls:"badge-warning"
+            text:
+                days === 0
+                ?
+                "今天到期"
+                :
+                `${days} 天后到期`,
+
+            className:
+                "badge-warning"
+
         };
 
     }
@@ -2620,52 +2323,62 @@ function statusOf(row){
 
     return {
         text:"正常",
-        cls:"badge-ok"
+        className:"badge-ok"
     };
 
 }
 
 
-
 /* =========================================================
-   加载
+   LOAD
 ========================================================= */
 
 async function loadData(
-    show=false
+    showMessage=false
 ){
 
     dbStatus.textContent =
-    "正在同步 Supabase…";
+        "正在同步 Supabase 数据库…";
 
 
     const {
         data,
         error
     } =
-    await sb
+        await sb
 
-    .from("sales_list")
+        .from(
+            "sales_list"
+        )
 
-    .select("*")
+        .select("*")
 
-    .order(
-        "expire_date",
-        {
-            ascending:true
-        }
-    );
+        .order(
+            "expire_date",
+            {
+                ascending:true
+            }
+        );
 
 
     if(error){
 
-        dbStatus.textContent =
-        "数据库连接失败";
+        console.error(
+            "读取数据失败：",
+            error
+        );
 
-        toast(
+
+        dbStatus.textContent =
+            "数据库连接失败";
+
+
+        showToast(
+            "读取失败：" +
             error.message,
             "error"
         );
+
 
         return;
 
@@ -2673,21 +2386,21 @@ async function loadData(
 
 
     allRows =
-    data || [];
+        data || [];
 
 
     dbStatus.textContent =
-    `数据库已连接 · ${allRows.length} 条记录`;
+        `数据库已连接 · ${allRows.length} 条记录`;
 
 
-    updateStats();
+    renderStats();
 
-    filterRows();
+    filterAndRender();
 
 
-    if(show){
+    if(showMessage){
 
-        toast(
+        showToast(
             "数据已刷新"
         );
 
@@ -2696,157 +2409,233 @@ async function loadData(
 }
 
 
-
 /* =========================================================
-   Stats
+   STATS
 ========================================================= */
 
-function updateStats(){
+function renderStats(){
 
     const total =
-    allRows.reduce(
-        (sum,row)=>
-        sum + Number(row.price || 0),
-        0
-    );
+        allRows.reduce(
+            (
+                sum,
+                row
+            ) =>
+                sum
+                +
+                Number(
+                    row.price || 0
+                ),
+            0
+        );
 
 
     const deleted =
-    allRows.filter(
-        r =>
-        r.is_deleted === "已删除"
-    ).length;
+        allRows.filter(
+            row =>
+                row.is_deleted ===
+                "已删除"
+        ).length;
 
 
     $("#totalAmount").textContent =
-    money(total);
+        formatMoney(total);
+
 
     $("#totalCount").textContent =
-    allRows.length;
+        allRows.length;
+
 
     $("#activeCount").textContent =
-    allRows.length - deleted;
+        allRows.length
+        -
+        deleted;
+
 
     $("#deletedCount").textContent =
-    deleted;
+        deleted;
 
 }
 
 
-
 /* =========================================================
-   表格
+   TABLE
 ========================================================= */
 
-function render(rows){
+function renderTable(rows){
 
-    tableBody.innerHTML="";
+    tableBody.innerHTML = "";
+
+
+    if(!rows.length){
+
+        emptyState.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    emptyState.style.display =
+        "none";
 
 
     rows.forEach(
-        (row,index)=>{
+        (
+            row,
+            index
+        ) => {
+
 
             const status =
-            statusOf(row);
+                getRowStatus(row);
 
 
             const tr =
-            document.createElement("tr");
+                document.createElement(
+                    "tr"
+                );
 
 
             if(
-                row.is_deleted === "已删除"
+                row.is_deleted ===
+                "已删除"
             ){
 
-                tr.style.opacity=".48";
+                tr.style.opacity =
+                    ".54";
 
             }
 
 
-            tr.innerHTML=`
+            tr.innerHTML =
+            `
 
-            <td>
-                ${index+1}
-            </td>
+                <td class="row-number">
+                    ${index + 1}
+                </td>
 
-            <td>
-                ${safe(row.sell_date || "-")}
-            </td>
 
-            <td>
-                ${safe(row.expire_date || "-")}
-            </td>
+                <td>
+                    ${escapeHtml(
+                        row.sell_date || "—"
+                    )}
+                </td>
 
-            <td class="price">
-                ${safe(money(row.price))}
-            </td>
 
-            <td>
-                ${safe(row.buyer_email || "-")}
-            </td>
+                <td>
+                    ${escapeHtml(
+                        row.expire_date || "—"
+                    )}
+                </td>
 
-            <td>
-                ${safe(row.project_no || "-")}
-            </td>
 
-            <td>
+                <td class="price">
+                    ${escapeHtml(
+                        formatMoney(
+                            row.price
+                        )
+                    )}
+                </td>
 
-                <span
-                    class="badge ${status.cls}"
-                >
-                    ${safe(status.text)}
-                </span>
 
-            </td>
+                <td class="email-cell">
+                    ${escapeHtml(
+                        row.buyer_email || "—"
+                    )}
+                </td>
 
-            <td>
-                ${safe(row.operator || "-")}
-            </td>
 
-            <td>
+                <td>
+                    ${escapeHtml(
+                        row.project_no || "—"
+                    )}
+                </td>
 
-                <div class="actions">
 
-                    <button
-                        class="small edit"
-                        data-action="edit"
-                        data-id="${row.id}"
+                <td>
+
+                    <span
+                        class="
+                            badge
+                            ${status.className}
+                        "
                     >
-                        编辑
-                    </button>
+                        ${escapeHtml(
+                            status.text
+                        )}
+                    </span>
 
-                    <button
-                        class="small"
-                        data-action="toggle"
-                        data-id="${row.id}"
-                    >
+                </td>
 
-                        ${
-                        row.is_deleted==="已删除"
-                        ?
-                        "恢复"
-                        :
-                        "标记删除"
-                        }
 
-                    </button>
+                <td>
+                    ${escapeHtml(
+                        row.operator || "—"
+                    )}
+                </td>
 
-                    <button
-                        class="small danger"
-                        data-action="delete"
-                        data-id="${row.id}"
-                    >
-                        永久删除
-                    </button>
 
-                </div>
+                <td>
 
-            </td>
+                    <div class="row-actions">
+
+
+                        <button
+                            class="
+                                mini-btn
+                                edit
+                            "
+                            data-action="edit"
+                            data-id="${row.id}"
+                        >
+                            编辑
+                        </button>
+
+
+                        <button
+                            class="mini-btn"
+                            data-action="toggle"
+                            data-id="${row.id}"
+                        >
+
+                            ${
+                                row.is_deleted ===
+                                "已删除"
+
+                                ?
+                                "恢复"
+
+                                :
+                                "标记删除"
+                            }
+
+                        </button>
+
+
+                        <button
+                            class="
+                                mini-btn
+                                delete
+                            "
+                            data-action="delete"
+                            data-id="${row.id}"
+                        >
+                            永久删除
+                        </button>
+
+
+                    </div>
+
+                </td>
 
             `;
 
 
-            tableBody.appendChild(tr);
+            tableBody.appendChild(
+                tr
+            );
 
         }
     );
@@ -2854,105 +2643,23 @@ function render(rows){
 }
 
 
-
 /* =========================================================
-   搜索
+   SEARCH
 ========================================================= */
 
-function filterRows(){
+function filterAndRender(){
 
-    const q =
-    searchInput
-    .value
-    .trim()
-    .toLowerCase();
-
-
-    if(!q){
-
-        render(allRows);
-
-        return;
-
-    }
+    const keyword =
+        searchInput
+        .value
+        .trim()
+        .toLowerCase();
 
 
-    render(
-        allRows.filter(
-            r =>
-            [
-                r.sell_date,
-                r.expire_date,
-                r.price,
-                r.buyer_email,
-                r.project_no,
-                r.operator,
-                r.is_deleted
-            ]
-            .join(" ")
-            .toLowerCase()
-            .includes(q)
-        )
-    );
+    if(!keyword){
 
-}
-
-
-searchInput.addEventListener(
-    "input",
-    filterRows
-);
-
-
-
-/* =========================================================
-   新增
-========================================================= */
-
-$("#btnAdd").onclick =
-async function(){
-
-    const payload={
-
-        sell_date:
-        sellDate.value,
-
-        expire_date:
-        expireDate.value,
-
-        price:
-        Number(price.value || 0),
-
-        buyer_email:
-        buyerEmail.value.trim(),
-
-        project_no:
-        projectNo.value.trim(),
-
-        operator:
-        operator.value,
-
-        is_deleted:
-        "未删除"
-
-    };
-
-
-    const {
-        error
-    } =
-    await sb
-
-    .from("sales_list")
-
-    .insert([payload]);
-
-
-    if(error){
-
-        toast(
-            "新增失败："+error.message,
-            "error"
+        renderTable(
+            allRows
         );
 
         return;
@@ -2960,137 +2667,311 @@ async function(){
     }
 
 
-    clearForm();
+    const rows =
+        allRows.filter(
+            row => {
 
-    toast(
-        "新增成功 🌴"
+
+                const searchable =
+                    [
+
+                        row.sell_date,
+                        row.expire_date,
+                        row.price,
+                        row.buyer_email,
+                        row.project_no,
+                        row.operator,
+                        row.is_deleted
+
+                    ]
+
+                    .join(" ")
+
+                    .toLowerCase();
+
+
+                return searchable.includes(
+                    keyword
+                );
+
+            }
+        );
+
+
+    renderTable(
+        rows
     );
-
-    await loadData();
-
-};
-
-
-
-/* =========================================================
-   清空
-========================================================= */
-
-function clearForm(){
-
-    sellDate.value="";
-
-    expireDate.value="";
-
-    price.value="";
-
-    buyerEmail.value="";
-
-    projectNo.value="";
-
-    operator.value="曾安南";
 
 }
 
 
-$("#btnClear").onclick =
-clearForm;
-
-
-
-/* =========================================================
-   表格操作
-========================================================= */
-
-tableBody.onclick =
-async function(e){
-
-    const btn =
-    e.target.closest(
-        "[data-action]"
-    );
-
-
-    if(!btn)
-        return;
-
-
-    const id =
-    Number(
-        btn.dataset.id
-    );
-
-
-    const action =
-    btn.dataset.action;
-
-
-    if(action==="edit"){
-
-        openEdit(id);
-
-    }
-
-
-    if(action==="toggle"){
-
-        await toggleDeleted(id);
-
-    }
-
-
-    if(action==="delete"){
-
-        await removeRow(id);
-
-    }
-
-};
-
+searchInput.addEventListener(
+    "input",
+    filterAndRender
+);
 
 
 /* =========================================================
-   标记删除
+   CREATE
 ========================================================= */
 
-async function toggleDeleted(id){
+$("#btnAdd")
+.addEventListener(
+    "click",
+    async () => {
+
+
+        const button =
+            $("#btnAdd");
+
+
+        const payload = {
+
+            sell_date:
+                sellDate.value,
+
+            expire_date:
+                expireDate.value,
+
+            price:
+                Number(
+                    price.value || 0
+                ),
+
+            buyer_email:
+                buyerEmail
+                .value
+                .trim(),
+
+            project_no:
+                projectNo
+                .value
+                .trim(),
+
+            operator:
+                operator.value,
+
+            is_deleted:
+                "未删除"
+
+        };
+
+
+        if(
+            !payload.sell_date
+            &&
+            !payload.expire_date
+            &&
+            !payload.buyer_email
+            &&
+            !payload.project_no
+        ){
+
+            showToast(
+                "请先填写销售记录",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            "正在保存…";
+
+
+        const {
+            error
+        } =
+            await sb
+
+            .from(
+                "sales_list"
+            )
+
+            .insert([
+                payload
+            ]);
+
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "＋ 新增销售记录";
+
+
+        if(error){
+
+            console.error(
+                error
+            );
+
+
+            showToast(
+                "新增失败：" +
+                error.message,
+                "error"
+            );
+
+
+            return;
+
+        }
+
+
+        clearForm();
+
+
+        showToast(
+            "销售记录新增成功"
+        );
+
+
+        await loadData();
+
+    }
+);
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearForm(){
+
+    sellDate.value = "";
+    expireDate.value = "";
+    price.value = "";
+    buyerEmail.value = "";
+    projectNo.value = "";
+
+    operator.value =
+        "曾安南";
+
+}
+
+
+$("#btnClear")
+.addEventListener(
+    "click",
+    clearForm
+);
+
+
+/* =========================================================
+   TABLE ACTIONS
+========================================================= */
+
+tableBody.addEventListener(
+    "click",
+    async event => {
+
+
+        const button =
+            event.target.closest(
+                "button[data-action]"
+            );
+
+
+        if(!button)
+            return;
+
+
+        const id =
+            Number(
+                button.dataset.id
+            );
+
+
+        const action =
+            button.dataset.action;
+
+
+        if(action === "edit"){
+
+            openEdit(id);
+
+        }
+
+
+        if(action === "toggle"){
+
+            await toggleDelete(id);
+
+        }
+
+
+        if(action === "delete"){
+
+            await permanentDelete(id);
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   SOFT DELETE
+========================================================= */
+
+async function toggleDelete(id){
 
     const row =
-    allRows.find(
-        r =>
-        Number(r.id) === id
-    );
+        allRows.find(
+            item =>
+                Number(item.id)
+                ===
+                Number(id)
+        );
 
 
     if(!row)
         return;
 
 
-    const next =
-    row.is_deleted === "已删除"
-    ?
-    "未删除"
-    :
-    "已删除";
+    const nextStatus =
+        row.is_deleted ===
+        "已删除"
+
+        ?
+        "未删除"
+
+        :
+        "已删除";
 
 
     const {
         error
     } =
-    await sb
+        await sb
 
-    .from("sales_list")
+        .from(
+            "sales_list"
+        )
 
-    .update({
-        is_deleted:next
-    })
+        .update({
+            is_deleted:
+                nextStatus
+        })
 
-    .eq("id",id);
+        .eq(
+            "id",
+            id
+        );
 
 
     if(error){
 
-        toast(
+        showToast(
+            "更新失败：" +
             error.message,
             "error"
         );
@@ -3100,10 +2981,13 @@ async function toggleDeleted(id){
     }
 
 
-    toast(
-        next === "已删除"
+    showToast(
+        nextStatus ===
+        "已删除"
+
         ?
         "已标记删除"
+
         :
         "记录已恢复"
     );
@@ -3114,36 +2998,43 @@ async function toggleDeleted(id){
 }
 
 
-
 /* =========================================================
-   永久删除
+   PERMANENT DELETE
 ========================================================= */
 
-async function removeRow(id){
+async function permanentDelete(id){
 
-    if(
-        !confirm(
-            "确定永久删除？\n此操作无法恢复。"
-        )
-    )
+    const confirmed =
+        confirm(
+            "确定永久删除这条记录吗？\n\n删除后无法恢复。"
+        );
+
+
+    if(!confirmed)
         return;
 
 
     const {
         error
     } =
-    await sb
+        await sb
 
-    .from("sales_list")
+        .from(
+            "sales_list"
+        )
 
-    .delete()
+        .delete()
 
-    .eq("id",id);
+        .eq(
+            "id",
+            id
+        );
 
 
     if(error){
 
-        toast(
+        showToast(
+            "删除失败：" +
             error.message,
             "error"
         );
@@ -3153,7 +3044,7 @@ async function removeRow(id){
     }
 
 
-    toast(
+    showToast(
         "记录已永久删除"
     );
 
@@ -3163,288 +3054,421 @@ async function removeRow(id){
 }
 
 
-
 /* =========================================================
-   编辑
+   EDIT
 ========================================================= */
 
 function openEdit(id){
 
     const row =
-    allRows.find(
-        r =>
-        Number(r.id) === id
-    );
+        allRows.find(
+            item =>
+                Number(item.id)
+                ===
+                Number(id)
+        );
 
 
     if(!row)
         return;
 
 
-    editingId=id;
+    editingId =
+        Number(id);
 
 
     $("#editSellDate").value =
-    row.sell_date || "";
+        row.sell_date || "";
+
 
     $("#editExpireDate").value =
-    row.expire_date || "";
+        row.expire_date || "";
+
 
     $("#editPrice").value =
-    row.price ?? "";
+        row.price ?? "";
+
 
     $("#editBuyerEmail").value =
-    row.buyer_email || "";
+        row.buyer_email || "";
+
 
     $("#editProjectNo").value =
-    row.project_no || "";
+        row.project_no || "";
+
 
     $("#editOperator").value =
-    row.operator || "曾安南";
+        row.operator || "曾安南";
 
 
     $("#editModal")
     .classList
-    .add("show");
+    .add(
+        "show"
+    );
 
 }
 
 
 function closeEdit(){
 
+    editingId = null;
+
+
     $("#editModal")
     .classList
-    .remove("show");
-
-    editingId=null;
+    .remove(
+        "show"
+    );
 
 }
 
 
-$("#closeModal").onclick =
-closeEdit;
+$("#closeModal")
+.addEventListener(
+    "click",
+    closeEdit
+);
 
 
-$("#cancelEdit").onclick =
-closeEdit;
+$("#cancelEdit")
+.addEventListener(
+    "click",
+    closeEdit
+);
 
 
+$("#editModal")
+.addEventListener(
+    "click",
+    event => {
 
-/* =========================================================
-   保存编辑
-========================================================= */
+        if(
+            event.target.id ===
+            "editModal"
+        ){
 
-$("#saveEdit").onclick =
-async function(){
+            closeEdit();
 
-    if(
-        editingId === null
-    )
-        return;
-
-
-    const updates={
-
-        sell_date:
-        $("#editSellDate").value,
-
-        expire_date:
-        $("#editExpireDate").value,
-
-        price:
-        Number(
-            $("#editPrice").value || 0
-        ),
-
-        buyer_email:
-        $("#editBuyerEmail")
-        .value
-        .trim(),
-
-        project_no:
-        $("#editProjectNo")
-        .value
-        .trim(),
-
-        operator:
-        $("#editOperator").value
-
-    };
-
-
-    const {
-        error
-    } =
-    await sb
-
-    .from("sales_list")
-
-    .update(updates)
-
-    .eq(
-        "id",
-        editingId
-    );
-
-
-    if(error){
-
-        toast(
-            error.message,
-            "error"
-        );
-
-        return;
+        }
 
     }
+);
 
 
-    closeEdit();
+document.addEventListener(
+    "keydown",
+    event => {
 
-    toast(
-        "修改已保存"
-    );
+        if(
+            event.key ===
+            "Escape"
+        ){
 
-    await loadData();
+            closeEdit();
 
-};
-
-
-
-/* =========================================================
-   刷新
-========================================================= */
-
-$("#btnRefresh").onclick =
-()=>loadData(true);
-
-
-
-/* =========================================================
-   CSV
-========================================================= */
-
-$("#btnExport").onclick =
-function(){
-
-    if(!allRows.length){
-
-        toast(
-            "当前没有数据",
-            "error"
-        );
-
-        return;
+        }
 
     }
+);
 
 
-    const header=[
-        "序号",
-        "售卖日期",
-        "截止日期",
-        "售价",
-        "买家邮箱",
-        "项目号",
-        "是否已删除",
-        "操作人"
-    ];
+/* =========================================================
+   SAVE EDIT
+========================================================= */
+
+$("#saveEdit")
+.addEventListener(
+    "click",
+    async () => {
 
 
-    let csv =
-    "\uFEFF"
-    +
-    header.join(",")
-    +
-    "\n";
+        if(
+            editingId === null
+        )
+            return;
 
 
-    allRows.forEach(
-        (r,i)=>{
-
-            const values=[
-                i+1,
-                r.sell_date || "",
-                r.expire_date || "",
-                r.price || 0,
-                r.buyer_email || "",
-                r.project_no || "",
-                r.is_deleted || "",
-                r.operator || ""
-            ];
+        const button =
+            $("#saveEdit");
 
 
-            csv +=
-            values
-            .map(
-                v =>
-                `"${String(v)
-                .replaceAll(
-                    '"',
-                    '""'
-                )}"`
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            "正在保存…";
+
+
+        const updates = {
+
+            sell_date:
+                $("#editSellDate")
+                .value,
+
+            expire_date:
+                $("#editExpireDate")
+                .value,
+
+            price:
+                Number(
+                    $("#editPrice")
+                    .value
+                    ||
+                    0
+                ),
+
+            buyer_email:
+                $("#editBuyerEmail")
+                .value
+                .trim(),
+
+            project_no:
+                $("#editProjectNo")
+                .value
+                .trim(),
+
+            operator:
+                $("#editOperator")
+                .value
+
+        };
+
+
+        const {
+            error
+        } =
+            await sb
+
+            .from(
+                "sales_list"
             )
-            .join(",")
+
+            .update(
+                updates
+            )
+
+            .eq(
+                "id",
+                editingId
+            );
+
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "保存修改";
+
+
+        if(error){
+
+            showToast(
+                "保存失败：" +
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        closeEdit();
+
+
+        showToast(
+            "修改已保存"
+        );
+
+
+        await loadData();
+
+    }
+);
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+$("#btnRefresh")
+.addEventListener(
+    "click",
+    () =>
+        loadData(true)
+);
+
+
+/* =========================================================
+   EXPORT CSV
+========================================================= */
+
+$("#btnExport")
+.addEventListener(
+    "click",
+    () => {
+
+
+        if(!allRows.length){
+
+            showToast(
+                "当前没有可以导出的数据",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const headers = [
+
+            "序号",
+            "售卖日期",
+            "截止日期",
+            "售价",
+            "买家邮箱",
+            "项目号",
+            "是否已删除",
+            "操作人"
+
+        ];
+
+
+        let csv =
+            "\uFEFF"
+            +
+            headers.join(",")
             +
             "\n";
 
-        }
-    );
+
+        allRows.forEach(
+            (
+                row,
+                index
+            ) => {
 
 
-    const blob =
-    new Blob(
-        [csv],
-        {
-            type:
-            "text/csv;charset=utf-8"
-        }
-    );
+                const values = [
+
+                    index + 1,
+
+                    row.sell_date || "",
+
+                    row.expire_date || "",
+
+                    row.price || 0,
+
+                    row.buyer_email || "",
+
+                    row.project_no || "",
+
+                    row.is_deleted || "",
+
+                    row.operator || ""
+
+                ];
 
 
-    const url =
-    URL.createObjectURL(blob);
+                csv +=
+                    values
+
+                    .map(
+                        value =>
+                            `"${String(value)
+                            .replaceAll(
+                                '"',
+                                '""'
+                            )}"`
+                    )
+
+                    .join(",")
+
+                    +
+                    "\n";
+
+            }
+        );
 
 
-    const a =
-    document.createElement("a");
+        const blob =
+            new Blob(
+                [csv],
+                {
+                    type:
+                        "text/csv;charset=utf-8;"
+                }
+            );
 
 
-    a.href=url;
-
-    a.download=
-    "挣钱上三亚_销售数据.csv";
-
-
-    a.click();
+        const url =
+            URL.createObjectURL(
+                blob
+            );
 
 
-    URL.revokeObjectURL(url);
+        const anchor =
+            document.createElement(
+                "a"
+            );
 
 
-    toast(
-        "CSV 已导出"
-    );
+        anchor.href =
+            url;
 
-};
 
+        anchor.download =
+            "挣钱上三亚_销售记录.csv";
+
+
+        document.body
+        .appendChild(
+            anchor
+        );
+
+
+        anchor.click();
+
+
+        anchor.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+
+        showToast(
+            "CSV 导出完成"
+        );
+
+    }
+);
 
 
 /* =========================================================
-   初始化
+   INIT
 ========================================================= */
 
 $("#year").textContent =
-new Date().getFullYear();
+    new Date()
+    .getFullYear();
 
 
 window.addEventListener(
     "load",
-    loadData
+    async () => {
+
+        await loadData();
+
+    }
 );
 
 </script>
 
 </body>
-
 </html>
