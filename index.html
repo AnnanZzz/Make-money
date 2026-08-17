@@ -2,60 +2,61 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#F4F0E8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F6F3ED">
 
-<title>挣钱上三亚 · Sanya Sales</title>
+<title>挣钱上三亚 · Sales Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
 /* =========================================================
-   DESIGN SYSTEM
+   01. DESIGN SYSTEM
 ========================================================= */
 
 :root{
-    --bg:#f3f0e9;
+    --page:#f4f2ed;
     --surface:#fffdf9;
-    --surface-soft:#f8f5ef;
+    --surface-soft:#f8f6f1;
 
-    --ink:#162c2a;
-    --ink-soft:#536866;
-    --muted:#899693;
+    --ink:#16322f;
+    --ink-2:#405b57;
+    --muted:#7f918d;
 
-    --ocean:#174b47;
-    --ocean-2:#246861;
-    --ocean-3:#7fae9f;
+    --green:#214f49;
+    --green-2:#2c6860;
+    --green-soft:#e9f2ef;
 
-    --sand:#d8bb88;
-    --sand-soft:#eee0c4;
+    --sand:#c9a974;
+    --sand-soft:#efe3cb;
 
-    --green:#2f7d65;
-    --green-soft:#e4f1eb;
+    --success:#367d61;
+    --success-bg:#e8f4ee;
 
-    --amber:#aa7726;
-    --amber-soft:#f8eed9;
+    --warning:#9c742e;
+    --warning-bg:#faf0da;
 
-    --red:#af5656;
-    --red-soft:#f7e4e4;
+    --danger:#a75555;
+    --danger-bg:#f8e9e8;
 
-    --border:rgba(21,51,47,.10);
+    --border:#e3e7e2;
 
     --shadow:
-        0 18px 60px rgba(39,61,56,.08);
+        0 18px 55px rgba(35,55,49,.08);
 
     --shadow-hover:
-        0 24px 70px rgba(39,61,56,.13);
+        0 24px 70px rgba(35,55,49,.12);
 
-    --radius-xl:30px;
-    --radius-lg:22px;
+    --radius-xl:32px;
+    --radius-lg:24px;
     --radius-md:16px;
-    --radius-sm:11px;
+    --radius-sm:12px;
 }
 
 
 /* =========================================================
-   RESET
+   02. RESET
 ========================================================= */
 
 *{
@@ -70,18 +71,21 @@ body{
     margin:0;
     min-height:100vh;
 
-    background:var(--bg);
     color:var(--ink);
+    background:var(--page);
 
     font-family:
         Inter,
-        "SF Pro Display",
         "SF Pro Text",
+        "SF Pro Display",
         "PingFang SC",
         "Microsoft YaHei",
         system-ui,
         -apple-system,
         sans-serif;
+
+    font-size:16px;
+    line-height:1.55;
 
     -webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility;
@@ -95,54 +99,43 @@ select{
 
 
 /* =========================================================
-   HERO
+   03. HERO
 ========================================================= */
 
 .hero{
     position:relative;
-    height:560px;
+
+    min-height:520px;
+
+    display:flex;
+    align-items:center;
+
     overflow:hidden;
 
-    background:#7ea69a;
+    background:#557b75;
 }
 
 
-/* 海景照片 */
+/*
+  不再移动背景。
+  避免之前那种海面推拉带来的晕眩感。
+*/
 
 .hero-photo{
     position:absolute;
-    inset:-6%;
+    inset:0;
 
     background-image:
         url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2400&q=92");
 
     background-size:cover;
-    background-position:center 58%;
+    background-position:center 54%;
 
-    transform:scale(1.08);
-
-    animation:
-        heroMove 24s ease-in-out infinite alternate;
-
-    will-change:transform;
-}
-
-@keyframes heroMove{
-    0%{
-        transform:
-            scale(1.08)
-            translate3d(-1.4%,0,0);
-    }
-
-    100%{
-        transform:
-            scale(1.16)
-            translate3d(1.8%,-1%,0);
-    }
+    transform:scale(1.01);
 }
 
 
-/* 调色层 */
+/* 暗部渐变 */
 
 .hero-overlay{
     position:absolute;
@@ -151,282 +144,231 @@ select{
     background:
         linear-gradient(
             90deg,
-            rgba(11,35,32,.70) 0%,
-            rgba(11,35,32,.44) 37%,
-            rgba(11,35,32,.10) 72%,
-            rgba(11,35,32,.02) 100%
+            rgba(10,31,29,.74) 0%,
+            rgba(10,31,29,.53) 37%,
+            rgba(10,31,29,.18) 67%,
+            rgba(10,31,29,.06) 100%
         ),
         linear-gradient(
             180deg,
-            rgba(8,30,28,.10),
-            rgba(8,30,28,.05) 58%,
-            rgba(8,30,28,.43)
+            rgba(10,30,28,.08),
+            rgba(10,30,28,.12) 60%,
+            rgba(10,30,28,.38)
         );
 }
 
 
-/* 海面微光 */
+/* 非移动式微光 */
 
-.water-light{
+.hero-light{
     position:absolute;
 
-    left:35%;
-    right:-10%;
-    bottom:-80px;
-
-    height:260px;
-
-    opacity:.45;
-
-    background:
-        repeating-linear-gradient(
-            -8deg,
-            transparent 0 17px,
-            rgba(255,255,255,.13) 18px 20px,
-            transparent 21px 37px
-        );
-
-    filter:blur(1px);
-
-    transform:skewX(-6deg);
-
-    animation:
-        waterMove 8s linear infinite;
-}
-
-@keyframes waterMove{
-    from{
-        transform:
-            translateX(-30px)
-            skewX(-6deg);
-    }
-
-    to{
-        transform:
-            translateX(30px)
-            skewX(-6deg);
-    }
-}
-
-
-/* 光晕 */
-
-.hero-glow{
-    position:absolute;
+    right:-180px;
+    top:-230px;
 
     width:650px;
     height:650px;
-
-    right:-170px;
-    top:-290px;
 
     border-radius:50%;
 
     background:
         radial-gradient(
             circle,
-            rgba(255,225,169,.40),
-            rgba(255,217,150,.08) 46%,
+            rgba(255,229,183,.26),
+            rgba(255,229,183,.08) 43%,
             transparent 70%
         );
 
-    filter:blur(8px);
+    pointer-events:none;
 
     animation:
-        glow 8s ease-in-out infinite alternate;
+        lightBreath 9s ease-in-out infinite alternate;
 }
 
-@keyframes glow{
+
+@keyframes lightBreath{
+
     from{
-        opacity:.68;
-        transform:scale(.94);
+        opacity:.72;
     }
 
     to{
         opacity:1;
-        transform:scale(1.07);
     }
+
 }
 
 
-/* Hero 内容 */
+/* =========================================================
+   04. HERO CONTENT
+========================================================= */
 
 .hero-inner{
-    width:min(1480px,calc(100% - 64px));
-    height:100%;
-
-    margin:auto;
-
     position:relative;
     z-index:5;
 
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:flex-start;
+    width:min(1440px,calc(100% - 72px));
 
-    padding-bottom:35px;
+    margin:auto;
 }
 
 
 .hero-kicker{
     display:flex;
     align-items:center;
-    gap:10px;
+
+    gap:12px;
+
+    margin-bottom:22px;
 
     color:rgba(255,255,255,.76);
 
-    font-size:13px;
-    font-weight:600;
+    font-size:clamp(12px,1vw,14px);
+
+    font-weight:650;
 
     letter-spacing:.18em;
-
-    margin-bottom:22px;
 }
 
 
 .hero-kicker::before{
     content:"";
 
-    width:30px;
+    width:34px;
     height:1px;
 
-    background:var(--sand-soft);
+    background:rgba(255,255,255,.66);
 }
 
 
 .hero-title{
     margin:0;
 
-    color:#fffdf6;
+    max-width:850px;
 
-    font-weight:520;
+    color:#fffdf7;
 
-    font-size:clamp(54px,6vw,82px);
+    font-size:
+        clamp(
+            48px,
+            6vw,
+            78px
+        );
 
-    line-height:1;
-    letter-spacing:-.055em;
+    font-weight:620;
+
+    line-height:1.08;
+
+    letter-spacing:-.045em;
 }
 
 
-.hero-title strong{
-    color:#f2d8aa;
-    font-weight:620;
+/*
+  “三亚”不再突兀黄色。
+  仅做非常克制的暖白区分。
+*/
+
+.hero-title .accent{
+    color:#f3e1bd;
 }
 
 
 .hero-copy{
-    max-width:610px;
-
     margin:
-        22px 0 0;
+        24px 0 0;
 
-    color:rgba(255,255,255,.82);
+    max-width:660px;
 
-    font-size:18px;
-    line-height:1.8;
+    color:rgba(255,255,255,.84);
 
-    letter-spacing:.01em;
-}
-
-
-.hero-bottom{
-    position:absolute;
-
-    left:0;
-    right:0;
-    bottom:0;
-
-    height:110px;
-
-    background:
-        linear-gradient(
-            180deg,
-            transparent,
-            rgba(243,240,233,.06)
+    font-size:
+        clamp(
+            17px,
+            1.35vw,
+            20px
         );
+
+    line-height:1.8;
 }
 
 
 /* =========================================================
-   MAIN
+   05. MAIN LAYOUT
 ========================================================= */
 
 .app{
-    width:min(1480px,calc(100% - 48px));
+    width:min(1440px,calc(100% - 48px));
 
-    margin:-62px auto 90px;
-
-    position:relative;
-    z-index:10;
+    margin:34px auto 90px;
 }
 
 
 /* =========================================================
-   STATS
+   06. STATS
 ========================================================= */
 
 .stats{
     display:grid;
 
     grid-template-columns:
-        1.45fr
+        1.35fr
         repeat(3,1fr);
 
     gap:16px;
 
-    margin-bottom:18px;
+    margin-bottom:20px;
 }
 
 
-.stat-card{
-    min-height:172px;
+.stat{
+    min-height:168px;
 
-    padding:25px 27px;
+    padding:27px;
+
+    position:relative;
+
+    overflow:hidden;
 
     border-radius:var(--radius-lg);
 
-    background:rgba(255,253,249,.94);
+    background:var(--surface);
 
-    border:1px solid rgba(255,255,255,.92);
+    border:1px solid rgba(255,255,255,.85);
 
     box-shadow:var(--shadow);
 
-    position:relative;
-    overflow:hidden;
-
     transition:
-        transform .28s ease,
-        box-shadow .28s ease;
+        transform .25s ease,
+        box-shadow .25s ease;
 }
 
 
-.stat-card:hover{
-    transform:translateY(-5px);
+.stat:hover{
+    transform:translateY(-4px);
     box-shadow:var(--shadow-hover);
 }
 
 
-.stat-card.primary{
+.stat.primary{
+    color:#fff;
+
     background:
         linear-gradient(
-            135deg,
-            #183f3b,
-            #235b55
+            145deg,
+            #183f3a,
+            #255d55
         );
-
-    color:#fff;
 }
 
 
 .stat-label{
-    font-size:12px;
-
-    font-weight:700;
-
-    letter-spacing:.13em;
-
     color:var(--muted);
+
+    font-size:13px;
+
+    font-weight:750;
+
+    letter-spacing:.12em;
 }
 
 
@@ -436,74 +378,74 @@ select{
 
 
 .stat-value{
-    margin-top:17px;
+    margin-top:18px;
 
     font-size:
         clamp(
-            34px,
-            3.7vw,
-            52px
+            38px,
+            3.6vw,
+            54px
         );
 
-    font-weight:620;
-
-    letter-spacing:-.045em;
+    font-weight:650;
 
     line-height:1;
+
+    letter-spacing:-.04em;
 }
 
 
 .primary .stat-value{
-    color:#f6e2ba;
+    color:#f3dfb9;
 }
 
 
 .stat-caption{
-    margin-top:13px;
+    margin-top:15px;
 
-    font-size:15px;
+    color:var(--ink-2);
 
-    color:var(--ink-soft);
+    font-size:16px;
 }
 
 
 .primary .stat-caption{
-    color:rgba(255,255,255,.68);
+    color:rgba(255,255,255,.72);
 }
 
 
-.stat-decoration{
+.stat-orb{
     position:absolute;
 
-    right:-35px;
-    bottom:-50px;
+    width:170px;
+    height:170px;
 
-    width:150px;
-    height:150px;
+    right:-75px;
+    bottom:-95px;
 
     border-radius:50%;
 
     background:
         radial-gradient(
             circle,
-            rgba(215,188,139,.20),
+            rgba(202,173,119,.21),
             transparent 67%
         );
 }
 
 
 /* =========================================================
-   PANEL
+   07. PANEL
 ========================================================= */
 
 .panel{
-    margin-bottom:18px;
+    margin-bottom:20px;
 
-    padding:30px;
+    padding:32px;
 
     border-radius:var(--radius-xl);
 
-    background:rgba(255,253,249,.96);
+    background:var(--surface);
 
     border:1px solid rgba(255,255,255,.90);
 
@@ -513,17 +455,19 @@ select{
 
 .panel-header{
     display:flex;
+
     align-items:center;
     justify-content:space-between;
 
     gap:18px;
 
-    margin-bottom:25px;
+    margin-bottom:28px;
 }
 
 
-.panel-heading{
+.panel-title{
     display:flex;
+
     align-items:center;
 
     gap:15px;
@@ -531,56 +475,62 @@ select{
 
 
 .panel-icon{
-    width:48px;
-    height:48px;
+    width:50px;
+    height:50px;
 
     display:grid;
     place-items:center;
 
     border-radius:15px;
 
-    background:#edf3ef;
+    background:var(--green-soft);
 
-    color:var(--ocean);
+    color:var(--green);
 
-    font-size:22px;
-    font-weight:400;
+    font-size:24px;
 }
 
 
-.panel-heading h2,
-.panel-heading h3{
+.panel-title h2,
+.panel-title h3{
     margin:0;
 
-    font-size:22px;
+    color:var(--ink);
 
-    font-weight:650;
+    font-size:
+        clamp(
+            21px,
+            1.8vw,
+            25px
+        );
+
+    font-weight:680;
 
     letter-spacing:-.025em;
 }
 
 
-.panel-heading p{
+.panel-title p{
     margin:
         5px 0 0;
 
     color:var(--muted);
 
-    font-size:14px;
+    font-size:15px;
 }
 
 
 /* =========================================================
-   FORM
+   08. FORM
 ========================================================= */
 
 .form-grid{
     display:grid;
 
     grid-template-columns:
-        repeat(6,minmax(130px,1fr));
+        repeat(3,minmax(0,1fr));
 
-    gap:14px;
+    gap:20px 16px;
 }
 
 
@@ -593,43 +543,44 @@ select{
 
 
 .field label{
-    color:#516764;
+    color:#435e59;
 
-    font-size:14px;
+    font-size:15px;
 
-    font-weight:600;
+    font-weight:650;
 }
 
 
 .input,
 .select{
     width:100%;
-    height:53px;
+
+    min-height:56px;
 
     padding:
-        0 15px;
+        0 16px;
 
-    border:1px solid #dce4e1;
+    color:#243f3a;
 
-    border-radius:14px;
+    background:#faf9f5;
 
-    background:#fbfaf6;
+    border:1px solid #dfe5e1;
+
+    border-radius:15px;
 
     outline:none;
 
-    color:#203e3a;
-
-    font-size:15px;
+    font-size:16px;
 
     transition:
-        border .18s ease,
+        border-color .18s ease,
         box-shadow .18s ease,
         background .18s ease;
 }
 
 
 .input::placeholder{
-    color:#a1afac;
+    color:#9da9a6;
 }
 
 
@@ -637,36 +588,36 @@ select{
 .select:focus{
     background:#fff;
 
-    border-color:#739b91;
+    border-color:#71958c;
 
     box-shadow:
         0 0 0 4px
-        rgba(69,118,106,.09);
+        rgba(45,96,85,.08);
 }
 
 
 .form-actions{
     display:flex;
 
-    gap:10px;
+    gap:11px;
 
-    margin-top:22px;
+    margin-top:24px;
 }
 
 
 /* =========================================================
-   BUTTONS
+   09. BUTTONS
 ========================================================= */
 
 .btn{
-    min-height:48px;
+    min-height:50px;
 
     padding:
-        0 19px;
+        0 20px;
 
     border:0;
 
-    border-radius:13px;
+    border-radius:14px;
 
     display:inline-flex;
     align-items:center;
@@ -676,14 +627,14 @@ select{
 
     cursor:pointer;
 
-    font-size:15px;
+    font-size:16px;
 
-    font-weight:650;
+    font-weight:680;
 
     transition:
-        transform .20s ease,
-        box-shadow .20s ease,
-        background .20s ease;
+        transform .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
 }
 
 
@@ -698,41 +649,34 @@ select{
     background:
         linear-gradient(
             135deg,
-            #245e57,
-            #174641
+            #285f57,
+            #173f3a
         );
 
     box-shadow:
-        0 10px 24px
-        rgba(25,71,64,.18);
+        0 10px 25px
+        rgba(24,69,62,.18);
 }
 
 
 .btn-primary:hover{
     box-shadow:
-        0 15px 30px
-        rgba(25,71,64,.25);
+        0 15px 32px
+        rgba(24,69,62,.25);
 }
 
 
 .btn-secondary{
-    color:#425f5b;
+    color:#405c57;
 
     background:#f2f4ef;
 
-    border:1px solid #dde5e1;
+    border:1px solid #dfe5e1;
 }
 
 
 .btn-secondary:hover{
     background:#e9eeea;
-}
-
-
-.btn-danger{
-    color:var(--red);
-
-    background:#fbefef;
 }
 
 
@@ -744,45 +688,51 @@ select{
 
 
 /* =========================================================
-   TOOLBAR
+   10. TOOLBAR
 ========================================================= */
 
 .toolbar{
     display:flex;
-    align-items:center;
+
     justify-content:space-between;
+    align-items:center;
 
-    gap:16px;
+    gap:18px;
 
-    margin-bottom:18px;
+    margin-bottom:20px;
 }
 
 
-.toolbar-title h3{
+.toolbar-heading h3{
     margin:0;
 
-    font-size:22px;
+    font-size:
+        clamp(
+            22px,
+            1.8vw,
+            26px
+        );
 
-    font-weight:650;
+    font-weight:680;
 }
 
 
-.toolbar-title p{
+.toolbar-heading p{
     margin:
         6px 0 0;
 
     color:var(--muted);
 
-    font-size:14px;
+    font-size:15px;
 }
 
 
 .toolbar-actions{
     display:flex;
 
-    gap:9px;
+    align-items:center;
 
-    flex-wrap:wrap;
+    gap:10px;
 }
 
 
@@ -799,47 +749,45 @@ select{
 
     transform:translateY(-50%);
 
-    color:#83928f;
+    color:#81918e;
+}
+
+
+.search-input{
+    width:330px;
+
+    height:50px;
+
+    padding:
+        0 16px 0 43px;
+
+    border:1px solid #dfe5e1;
+
+    border-radius:14px;
+
+    outline:none;
+
+    color:#304b46;
+
+    background:#faf9f5;
 
     font-size:16px;
 }
 
 
-.search-input{
-    width:315px;
-    height:48px;
-
-    padding:
-        0 16px 0 43px;
-
-    border:1px solid #dce5e2;
-
-    border-radius:13px;
-
-    outline:none;
-
-    background:#fbfaf6;
-
-    color:#304c48;
-
-    font-size:15px;
-}
-
-
-.search-input::placeholder{
-    color:#a2aeac;
-}
-
-
 /* =========================================================
-   TABLE
+   11. DESKTOP TABLE
 ========================================================= */
 
-.table-shell{
-    overflow:auto;
+.desktop-table{
+    display:block;
+}
 
-    border:
-        1px solid #e1e8e5;
+
+.table-shell{
+    overflow-x:auto;
+
+    border:1px solid #e3e8e4;
 
     border-radius:20px;
 
@@ -857,23 +805,23 @@ table{
 
 
 thead{
-    background:#f6f5f0;
+    background:#f6f5f1;
 }
 
 
 th{
     padding:
-        17px 16px;
+        18px 16px;
 
     text-align:left;
 
-    color:#748480;
+    color:#71827e;
 
-    font-size:13px;
+    font-size:14px;
 
-    font-weight:700;
+    font-weight:750;
 
-    letter-spacing:.035em;
+    letter-spacing:.025em;
 
     white-space:nowrap;
 }
@@ -881,14 +829,14 @@ th{
 
 td{
     padding:
-        19px 16px;
+        20px 16px;
 
     border-top:
-        1px solid #edf0ee;
+        1px solid #ecefec;
 
-    color:#3c5652;
+    color:#38534e;
 
-    font-size:15px;
+    font-size:16px;
 
     line-height:1.45;
 
@@ -898,35 +846,35 @@ td{
 
 tbody tr{
     transition:
-        background .18s ease;
+        background .16s ease;
 }
 
 
 tbody tr:hover{
-    background:#fafaf6;
+    background:#fafaf7;
 }
 
 
-.row-number{
-    color:#99a5a2;
+.row-index{
+    color:#899894;
 
-    font-weight:600;
+    font-weight:650;
 }
 
 
 .price{
-    color:#235d54;
+    color:#215d53;
 
-    font-size:16px;
+    font-size:17px;
 
-    font-weight:700;
+    font-weight:720;
 
     white-space:nowrap;
 }
 
 
-.email-cell{
-    max-width:260px;
+.email{
+    max-width:280px;
 
     overflow:hidden;
 
@@ -937,7 +885,7 @@ tbody tr:hover{
 
 
 /* =========================================================
-   BADGES
+   12. STATUS BADGE
 ========================================================= */
 
 .badge{
@@ -948,13 +896,13 @@ tbody tr:hover{
     gap:7px;
 
     padding:
-        7px 11px;
+        8px 11px;
 
     border-radius:999px;
 
-    font-size:13px;
+    font-size:14px;
 
-    font-weight:650;
+    font-weight:680;
 
     white-space:nowrap;
 }
@@ -971,148 +919,230 @@ tbody tr:hover{
 
 
 .badge-ok{
-    color:var(--green);
-    background:var(--green-soft);
+    color:var(--success);
+    background:var(--success-bg);
 }
 
+
 .badge-ok::before{
-    background:#58a486;
+    background:#55a283;
 }
 
 
 .badge-warning{
-    color:var(--amber);
-    background:var(--amber-soft);
+    color:var(--warning);
+    background:var(--warning-bg);
 }
 
+
 .badge-warning::before{
-    background:#cf9a3c;
+    background:#d29f45;
 }
 
 
 .badge-expired{
-    color:var(--red);
-    background:var(--red-soft);
+    color:var(--danger);
+    background:var(--danger-bg);
 }
 
+
 .badge-expired::before{
-    background:#cd7272;
+    background:#cc7474;
 }
 
 
 .badge-deleted{
-    color:#7b8886;
+    color:#768581;
     background:#eff1ef;
 }
 
+
 .badge-deleted::before{
-    background:#98a39f;
+    background:#94a09d;
 }
 
 
 /* =========================================================
-   ROW ACTIONS
+   13. ROW BUTTONS
 ========================================================= */
 
 .row-actions{
     display:flex;
 
-    gap:6px;
+    gap:7px;
 
-    flex-wrap:nowrap;
+    white-space:nowrap;
 }
 
 
 .mini-btn{
-    height:36px;
+    min-height:38px;
 
     padding:
-        0 11px;
+        0 12px;
 
     border-radius:10px;
 
-    border:1px solid #dde5e2;
+    border:1px solid #dfe5e1;
 
     background:#fff;
 
-    color:#536c68;
+    color:#4d6862;
 
-    font-size:13px;
+    font-size:14px;
 
-    font-weight:600;
+    font-weight:650;
 
     cursor:pointer;
-
-    white-space:nowrap;
-
-    transition:
-        background .18s ease,
-        border .18s ease;
 }
 
 
 .mini-btn:hover{
-    background:#f1f5f2;
+    background:#f2f5f2;
 }
 
 
 .mini-btn.edit{
-    color:#2c7468;
+    color:#267064;
 }
 
 
-.mini-btn.delete{
-    color:#ae5c5c;
+.mini-btn.danger{
+    color:#a65a5a;
 }
 
 
 /* =========================================================
-   EMPTY STATE
+   14. MOBILE RECORD CARDS
 ========================================================= */
 
-.empty-state{
+.mobile-records{
+    display:none;
+}
+
+
+.mobile-card{
+    padding:20px;
+
+    margin-bottom:12px;
+
+    border:1px solid #e2e7e3;
+
+    border-radius:20px;
+
+    background:#fff;
+}
+
+
+.mobile-card-top{
+    display:flex;
+
+    align-items:flex-start;
+    justify-content:space-between;
+
+    gap:14px;
+
+    margin-bottom:16px;
+}
+
+
+.mobile-project{
+    font-size:19px;
+
+    font-weight:720;
+
+    color:var(--ink);
+}
+
+
+.mobile-money{
+    margin-top:4px;
+
+    color:#256057;
+
+    font-size:22px;
+
+    font-weight:730;
+}
+
+
+.mobile-grid{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:14px;
+
+    padding:
+        16px 0;
+
+    border-top:
+        1px solid #edf0ed;
+
+    border-bottom:
+        1px solid #edf0ed;
+}
+
+
+.mobile-info-label{
+    margin-bottom:3px;
+
+    color:#899793;
+
+    font-size:13px;
+
+    font-weight:650;
+}
+
+
+.mobile-info-value{
+    color:#405b56;
+
+    font-size:16px;
+
+    word-break:break-word;
+}
+
+
+.mobile-actions{
+    display:flex;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    margin-top:16px;
+}
+
+
+/* =========================================================
+   15. EMPTY
+========================================================= */
+
+.empty{
     display:none;
 
     padding:
-        75px 20px;
+        72px 20px;
 
     text-align:center;
 
-    color:#889995;
+    color:#7f908c;
 
-    font-size:15px;
-}
-
-
-.empty-circle{
-    width:52px;
-    height:52px;
-
-    display:grid;
-    place-items:center;
-
-    margin:
-        0 auto 14px;
-
-    border-radius:50%;
-
-    background:#edf2ee;
-
-    color:#67807a;
-
-    font-size:21px;
+    font-size:16px;
 }
 
 
 /* =========================================================
-   MODAL
+   16. MODAL
 ========================================================= */
 
 .modal-mask{
     position:fixed;
     inset:0;
 
-    z-index:100;
+    z-index:1000;
 
     display:none;
 
@@ -1121,9 +1151,9 @@ tbody tr:hover{
 
     padding:22px;
 
-    background:rgba(13,35,32,.42);
+    background:rgba(12,35,31,.44);
 
-    backdrop-filter:blur(12px);
+    backdrop-filter:blur(10px);
 }
 
 
@@ -1133,75 +1163,57 @@ tbody tr:hover{
 
 
 .modal{
-    width:min(760px,100%);
+    width:min(780px,100%);
 
     max-height:
         calc(100vh - 44px);
 
-    overflow:auto;
+    overflow-y:auto;
 
-    padding:28px;
+    padding:30px;
 
-    border-radius:28px;
+    border-radius:30px;
 
     background:#fffdf9;
 
     box-shadow:
-        0 35px 90px rgba(28,52,47,.25);
-
-    animation:
-        modalIn .24s ease;
-}
-
-
-@keyframes modalIn{
-    from{
-        opacity:0;
-        transform:
-            translateY(16px)
-            scale(.98);
-    }
-
-    to{
-        opacity:1;
-        transform:
-            translateY(0)
-            scale(1);
-    }
+        0 35px 95px
+        rgba(27,53,46,.25);
 }
 
 
 .modal-header{
     display:flex;
-    align-items:center;
-    justify-content:space-between;
 
-    margin-bottom:23px;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:25px;
 }
 
 
 .modal-header h3{
     margin:0;
 
-    font-size:23px;
+    font-size:25px;
 
-    font-weight:650;
+    font-weight:680;
 }
 
 
 .modal-close{
-    width:40px;
-    height:40px;
+    width:42px;
+    height:42px;
 
     border:0;
 
-    border-radius:12px;
+    border-radius:13px;
 
-    background:#f0f3ef;
+    background:#eef2ee;
 
-    color:#526a65;
+    color:#4d6862;
 
-    font-size:20px;
+    font-size:21px;
 
     cursor:pointer;
 }
@@ -1211,9 +1223,9 @@ tbody tr:hover{
     display:grid;
 
     grid-template-columns:
-        repeat(2,1fr);
+        1fr 1fr;
 
-    gap:15px;
+    gap:16px;
 }
 
 
@@ -1224,21 +1236,21 @@ tbody tr:hover{
 
     gap:10px;
 
-    margin-top:24px;
+    margin-top:25px;
 }
 
 
 /* =========================================================
-   TOAST
+   17. TOAST
 ========================================================= */
 
 .toast-stack{
     position:fixed;
 
-    right:22px;
     top:22px;
+    right:22px;
 
-    z-index:200;
+    z-index:2000;
 
     display:flex;
     flex-direction:column;
@@ -1256,145 +1268,65 @@ tbody tr:hover{
     padding:
         15px 17px;
 
-    border-radius:14px;
+    border-radius:15px;
 
-    background:rgba(255,253,249,.96);
+    color:#314c47;
 
-    color:#314d48;
+    background:rgba(255,253,249,.97);
+
+    border:1px solid white;
 
     box-shadow:
         0 20px 55px
-        rgba(36,61,55,.16);
+        rgba(32,59,52,.16);
 
-    border:
-        1px solid rgba(255,255,255,.95);
-
-    backdrop-filter:blur(18px);
-
-    font-size:14px;
-
-    animation:
-        toastIn .23s ease;
+    font-size:15px;
 }
 
 
 .toast.success{
     border-left:
-        4px solid #4d997d;
+        4px solid #57997d;
 }
 
 
 .toast.error{
     border-left:
-        4px solid #c76c6c;
-}
-
-
-@keyframes toastIn{
-    from{
-        opacity:0;
-        transform:
-            translateX(18px);
-    }
-
-    to{
-        opacity:1;
-        transform:
-            translateX(0);
-    }
+        4px solid #c66d6d;
 }
 
 
 /* =========================================================
-   FOOTER
+   18. FOOTER
 ========================================================= */
 
 .footer{
-    padding-top:8px;
+    padding-top:12px;
 
     text-align:center;
 
-    color:#99a49f;
+    color:#899792;
 
-    font-size:12px;
+    font-size:13px;
 
-    letter-spacing:.12em;
+    letter-spacing:.10em;
 }
 
 
 /* =========================================================
-   RESPONSIVE
+   19. TABLET
 ========================================================= */
 
-@media(max-width:1150px){
+@media(max-width:1100px){
 
     .stats{
         grid-template-columns:
-            repeat(2,1fr);
+            1fr 1fr;
     }
 
     .form-grid{
         grid-template-columns:
-            repeat(3,1fr);
-    }
-
-}
-
-
-@media(max-width:760px){
-
-    .hero{
-        height:500px;
-    }
-
-    .hero-inner{
-        width:
-            calc(100% - 36px);
-
-        justify-content:flex-end;
-
-        padding-bottom:105px;
-    }
-
-    .hero-title{
-        font-size:
-            clamp(47px,15vw,66px);
-    }
-
-    .hero-copy{
-        font-size:16px;
-        line-height:1.65;
-    }
-
-    .app{
-        width:
-            calc(100% - 22px);
-
-        margin-top:-55px;
-    }
-
-    .stats{
-        grid-template-columns:
-            repeat(2,1fr);
-
-        gap:10px;
-    }
-
-    .stat-card{
-        min-height:145px;
-
-        padding:20px;
-    }
-
-    .panel{
-        padding:20px;
-
-        border-radius:24px;
-    }
-
-    .form-grid{
-        grid-template-columns:
-            repeat(2,1fr);
+            1fr 1fr;
     }
 
     .toolbar{
@@ -1407,7 +1339,7 @@ tbody tr:hover{
     }
 
     .search{
-        width:100%;
+        flex:1;
     }
 
     .search-input{
@@ -1417,38 +1349,262 @@ tbody tr:hover{
 }
 
 
-@media(max-width:500px){
+/* =========================================================
+   20. MOBILE
+========================================================= */
+
+@media(max-width:760px){
+
+    body{
+        font-size:16px;
+    }
 
     .hero{
-        height:470px;
+        min-height:440px;
+
+        align-items:flex-end;
+    }
+
+    .hero-photo{
+        background-position:62% center;
+    }
+
+    .hero-overlay{
+        background:
+            linear-gradient(
+                180deg,
+                rgba(10,31,29,.13) 0%,
+                rgba(10,31,29,.30) 38%,
+                rgba(10,31,29,.79) 100%
+            );
+    }
+
+    .hero-inner{
+        width:
+            calc(100% - 36px);
+
+        padding-bottom:48px;
     }
 
     .hero-kicker{
-        font-size:11px;
+        margin-bottom:16px;
+
+        font-size:12px;
+
+        letter-spacing:.12em;
+    }
+
+    .hero-title{
+        max-width:100%;
+
+        font-size:
+            clamp(
+                44px,
+                14vw,
+                62px
+            );
+
+        line-height:1.08;
+
+        letter-spacing:-.035em;
     }
 
     .hero-copy{
-        max-width:330px;
+        margin-top:18px;
+
+        max-width:420px;
+
+        font-size:17px;
+
+        line-height:1.65;
+    }
+
+    .app{
+        width:
+            calc(100% - 20px);
+
+        margin-top:18px;
     }
 
     .stats{
-        grid-template-columns:1fr;
+        grid-template-columns:
+            1fr 1fr;
+
+        gap:10px;
+    }
+
+    .stat{
+        min-height:145px;
+
+        padding:20px;
+
+        border-radius:20px;
+    }
+
+    .stat-label{
+        font-size:11px;
+    }
+
+    .stat-value{
+        margin-top:14px;
+
+        font-size:
+            clamp(
+                32px,
+                10vw,
+                42px
+            );
+    }
+
+    .stat-caption{
+        margin-top:11px;
+
+        font-size:14px;
+    }
+
+    .panel{
+        padding:20px;
+
+        border-radius:24px;
+    }
+
+    .panel-header{
+        margin-bottom:22px;
+    }
+
+    .panel-icon{
+        width:46px;
+        height:46px;
+    }
+
+    .panel-title h2,
+    .panel-title h3{
+        font-size:21px;
+    }
+
+    .panel-title p{
+        font-size:14px;
     }
 
     .form-grid{
         grid-template-columns:1fr;
+
+        gap:16px;
+    }
+
+    .field label{
+        font-size:15px;
+    }
+
+    .input,
+    .select{
+        min-height:56px;
+
+        font-size:16px;
+    }
+
+    .form-actions{
+        display:grid;
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .btn{
+        min-height:52px;
+
+        font-size:16px;
+    }
+
+    .toolbar-actions{
+        display:grid;
+
+        grid-template-columns:
+            1fr 1fr;
+
+        width:100%;
+    }
+
+    .search{
+        grid-column:
+            1 / -1;
+    }
+
+    .search-input{
+        height:52px;
+
+        font-size:16px;
+    }
+
+    /*
+      手机上不显示传统横向表格。
+      自动切换成大字号卡片。
+    */
+
+    .desktop-table{
+        display:none;
+    }
+
+    .mobile-records{
+        display:block;
+    }
+
+    .modal{
+        padding:22px;
+
+        border-radius:24px;
     }
 
     .modal-grid{
         grid-template-columns:1fr;
     }
 
-    .form-actions{
-        flex-direction:column;
+}
+
+
+/* =========================================================
+   21. VERY SMALL PHONE
+========================================================= */
+
+@media(max-width:430px){
+
+    .stats{
+        grid-template-columns:1fr;
     }
 
-    .form-actions .btn{
-        width:100%;
+    .stat{
+        min-height:135px;
+    }
+
+    .hero{
+        min-height:420px;
+    }
+
+    .hero-title{
+        font-size:46px;
+    }
+
+    .hero-copy{
+        font-size:16px;
+    }
+
+    .form-actions{
+        grid-template-columns:1fr;
+    }
+
+}
+
+
+/* =========================================================
+   22. REDUCED MOTION
+========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    *{
+        scroll-behavior:auto !important;
+        animation:none !important;
+        transition:none !important;
     }
 
 }
@@ -1467,9 +1623,11 @@ tbody tr:hover{
 <section class="hero">
 
     <div class="hero-photo"></div>
+
     <div class="hero-overlay"></div>
-    <div class="water-light"></div>
-    <div class="hero-glow"></div>
+
+    <div class="hero-light"></div>
+
 
     <div class="hero-inner">
 
@@ -1477,22 +1635,26 @@ tbody tr:hover{
             SANYA · PRIVATE SALES
         </div>
 
+
         <h1 class="hero-title">
-            挣钱上<strong>三亚</strong>
+            挣钱上<span class="accent">三亚</span>
         </h1>
+
 
         <p class="hero-copy">
             认真记录每一次成交。<br>
-            我们要去的地方，有阳光、有椰树，也有海。
+            去想去的地方，过想过的生活。
         </p>
 
     </div>
 
-    <div class="hero-bottom"></div>
-
 </section>
 
 
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
 
 <div
     class="toast-stack"
@@ -1514,7 +1676,8 @@ tbody tr:hover{
 
 <section class="stats">
 
-    <article class="stat-card primary">
+
+    <article class="stat primary">
 
         <div class="stat-label">
             TOTAL REVENUE
@@ -1531,12 +1694,12 @@ tbody tr:hover{
             累计销售金额
         </div>
 
-        <div class="stat-decoration"></div>
+        <div class="stat-orb"></div>
 
     </article>
 
 
-    <article class="stat-card">
+    <article class="stat">
 
         <div class="stat-label">
             PROJECTS
@@ -1553,12 +1716,12 @@ tbody tr:hover{
             全部销售项目
         </div>
 
-        <div class="stat-decoration"></div>
+        <div class="stat-orb"></div>
 
     </article>
 
 
-    <article class="stat-card">
+    <article class="stat">
 
         <div class="stat-label">
             ACTIVE
@@ -1575,12 +1738,12 @@ tbody tr:hover{
             当前有效项目
         </div>
 
-        <div class="stat-decoration"></div>
+        <div class="stat-orb"></div>
 
     </article>
 
 
-    <article class="stat-card">
+    <article class="stat">
 
         <div class="stat-label">
             ARCHIVED
@@ -1597,9 +1760,10 @@ tbody tr:hover{
             已标记删除
         </div>
 
-        <div class="stat-decoration"></div>
+        <div class="stat-orb"></div>
 
     </article>
+
 
 </section>
 
@@ -1613,7 +1777,7 @@ tbody tr:hover{
 
     <div class="panel-header">
 
-        <div class="panel-heading">
+        <div class="panel-title">
 
             <div class="panel-icon">
                 ＋
@@ -1626,7 +1790,7 @@ tbody tr:hover{
                 </h2>
 
                 <p>
-                    保存后自动同步至共享数据库
+                    保存后将实时同步到共享数据库
                 </p>
 
             </div>
@@ -1634,6 +1798,7 @@ tbody tr:hover{
         </div>
 
     </div>
+
 
 
     <div class="form-grid">
@@ -1680,7 +1845,7 @@ tbody tr:hover{
                 id="price"
                 type="number"
                 step="0.01"
-                placeholder="输入金额"
+                placeholder="例如 5800"
             >
 
         </div>
@@ -1752,6 +1917,7 @@ tbody tr:hover{
     </div>
 
 
+
     <div class="form-actions">
 
         <button
@@ -1775,14 +1941,15 @@ tbody tr:hover{
 
 
 <!-- =========================================================
-     DATA
+     SALES DATA
 ========================================================= -->
 
 <section class="panel">
 
     <div class="toolbar">
 
-        <div class="toolbar-title">
+
+        <div class="toolbar-heading">
 
             <h3>
                 销售记录
@@ -1795,7 +1962,9 @@ tbody tr:hover{
         </div>
 
 
+
         <div class="toolbar-actions">
+
 
             <div class="search">
 
@@ -1828,61 +1997,107 @@ tbody tr:hover{
                 ↓ 导出 CSV
             </button>
 
+
         </div>
 
     </div>
 
 
-    <div class="table-shell">
 
-        <table>
+    <!-- 桌面电脑版本 -->
 
-            <thead>
+    <div class="desktop-table">
 
-                <tr>
+        <div class="table-shell">
 
-                    <th>#</th>
-                    <th>售卖日期</th>
-                    <th>截止日期</th>
-                    <th>售价</th>
-                    <th>买家邮箱</th>
-                    <th>项目号</th>
-                    <th>状态</th>
-                    <th>操作人</th>
-                    <th>操作</th>
+            <table>
 
-                </tr>
+                <thead>
 
-            </thead>
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>
+                            售卖日期
+                        </th>
+
+                        <th>
+                            截止日期
+                        </th>
+
+                        <th>
+                            售价
+                        </th>
+
+                        <th>
+                            买家邮箱
+                        </th>
+
+                        <th>
+                            项目号
+                        </th>
+
+                        <th>
+                            状态
+                        </th>
+
+                        <th>
+                            操作人
+                        </th>
+
+                        <th>
+                            操作
+                        </th>
+
+                    </tr>
+
+                </thead>
 
 
-            <tbody id="tableBody"></tbody>
+                <tbody id="tableBody"></tbody>
 
-        </table>
+            </table>
 
 
-        <div
-            class="empty-state"
-            id="emptyState"
-        >
-
-            <div class="empty-circle">
-                ◌
+            <div
+                class="empty"
+                id="desktopEmpty"
+            >
+                暂时没有销售记录
             </div>
 
-            暂时没有符合条件的销售记录
-
         </div>
 
     </div>
+
+
+
+    <!-- 手机版本 -->
+
+    <div
+        class="mobile-records"
+        id="mobileRecords"
+    ></div>
+
+
+    <div
+        class="empty"
+        id="mobileEmpty"
+    >
+        暂时没有销售记录
+    </div>
+
 
 </section>
 
 
 
 <div class="footer">
+
     SANYA DREAM FUND ·
     <span id="year"></span>
+
 </div>
 
 
@@ -1916,6 +2131,7 @@ tbody tr:hover{
             </button>
 
         </div>
+
 
 
         <div class="modal-grid">
@@ -2028,6 +2244,7 @@ tbody tr:hover{
         </div>
 
 
+
         <div class="modal-actions">
 
             <button
@@ -2036,6 +2253,7 @@ tbody tr:hover{
             >
                 取消
             </button>
+
 
             <button
                 class="btn btn-primary"
@@ -2046,6 +2264,7 @@ tbody tr:hover{
 
         </div>
 
+
     </div>
 
 </div>
@@ -2055,18 +2274,20 @@ tbody tr:hover{
 <script>
 
 /* =========================================================
-   SUPABASE
+   01. SUPABASE
 ========================================================= */
 
 const SUPABASE_URL =
     "https://dufemmclialublrxzwny.supabase.co";
 
+
 const SUPABASE_KEY =
     "sb_publishable_G1lGo2yiVKzQeNFiJdG6Dg_HCdWFEFU";
 
 
-const { createClient } =
-    window.supabase;
+const {
+    createClient
+} = window.supabase;
 
 
 const sb =
@@ -2082,7 +2303,7 @@ const sb =
 
 
 /* =========================================================
-   DOM
+   02. DOM
 ========================================================= */
 
 const $ =
@@ -2114,8 +2335,16 @@ const operator =
 const tableBody =
     $("#tableBody");
 
-const emptyState =
-    $("#emptyState");
+const mobileRecords =
+    $("#mobileRecords");
+
+
+const desktopEmpty =
+    $("#desktopEmpty");
+
+const mobileEmpty =
+    $("#mobileEmpty");
+
 
 const searchInput =
     $("#searchInput");
@@ -2128,11 +2357,12 @@ const toastStack =
 
 
 let allRows = [];
+
 let editingId = null;
 
 
 /* =========================================================
-   UTILITIES
+   03. UTILITY
 ========================================================= */
 
 function escapeHtml(value){
@@ -2140,7 +2370,6 @@ function escapeHtml(value){
     return String(
         value ?? ""
     )
-
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
@@ -2169,38 +2398,35 @@ function formatMoney(value){
 }
 
 
-function showToast(
-    text,
+function toast(
+    message,
     type="success"
 ){
 
-    const toast =
+    const el =
         document.createElement(
             "div"
         );
 
 
-    toast.className =
+    el.className =
         `toast ${type}`;
 
 
-    toast.textContent =
-        text;
+    el.textContent =
+        message;
 
 
     toastStack.appendChild(
-        toast
+        el
     );
 
 
     setTimeout(
         () => {
 
-            toast.style.opacity =
+            el.style.opacity =
                 "0";
-
-            toast.style.transform =
-                "translateX(18px)";
 
         },
         2700
@@ -2210,7 +2436,7 @@ function showToast(
     setTimeout(
         () => {
 
-            toast.remove();
+            el.remove();
 
         },
         3100
@@ -2218,6 +2444,10 @@ function showToast(
 
 }
 
+
+/* =========================================================
+   04. DATE STATUS
+========================================================= */
 
 function daysUntil(
     dateString
@@ -2259,11 +2489,7 @@ function daysUntil(
 }
 
 
-/* =========================================================
-   STATUS
-========================================================= */
-
-function getRowStatus(row){
+function getStatus(row){
 
     if(
         row.is_deleted ===
@@ -2272,7 +2498,7 @@ function getRowStatus(row){
 
         return {
             text:"已删除",
-            className:"badge-deleted"
+            cls:"badge-deleted"
         };
 
     }
@@ -2292,7 +2518,7 @@ function getRowStatus(row){
 
         return {
             text:"已过期",
-            className:"badge-expired"
+            cls:"badge-expired"
         };
 
     }
@@ -2313,8 +2539,7 @@ function getRowStatus(row){
                 :
                 `${days} 天后到期`,
 
-            className:
-                "badge-warning"
+            cls:"badge-warning"
 
         };
 
@@ -2323,14 +2548,14 @@ function getRowStatus(row){
 
     return {
         text:"正常",
-        className:"badge-ok"
+        cls:"badge-ok"
     };
 
 }
 
 
 /* =========================================================
-   LOAD
+   05. LOAD DATA
 ========================================================= */
 
 async function loadData(
@@ -2364,7 +2589,6 @@ async function loadData(
     if(error){
 
         console.error(
-            "读取数据失败：",
             error
         );
 
@@ -2373,7 +2597,7 @@ async function loadData(
             "数据库连接失败";
 
 
-        showToast(
+        toast(
             "读取失败：" +
             error.message,
             "error"
@@ -2393,14 +2617,14 @@ async function loadData(
         `数据库已连接 · ${allRows.length} 条记录`;
 
 
-    renderStats();
+    updateStats();
 
-    filterAndRender();
+    filterRows();
 
 
     if(showMessage){
 
-        showToast(
+        toast(
             "数据已刷新"
         );
 
@@ -2410,10 +2634,10 @@ async function loadData(
 
 
 /* =========================================================
-   STATS
+   06. STATS
 ========================================================= */
 
-function renderStats(){
+function updateStats(){
 
     const total =
         allRows.reduce(
@@ -2459,26 +2683,21 @@ function renderStats(){
 
 
 /* =========================================================
-   TABLE
+   07. DESKTOP TABLE
 ========================================================= */
 
-function renderTable(rows){
+function renderDesktop(rows){
 
-    tableBody.innerHTML = "";
-
-
-    if(!rows.length){
-
-        emptyState.style.display =
-            "block";
-
-        return;
-
-    }
+    tableBody.innerHTML =
+        "";
 
 
-    emptyState.style.display =
-        "none";
+    desktopEmpty.style.display =
+        rows.length
+        ?
+        "none"
+        :
+        "block";
 
 
     rows.forEach(
@@ -2489,7 +2708,7 @@ function renderTable(rows){
 
 
             const status =
-                getRowStatus(row);
+                getStatus(row);
 
 
             const tr =
@@ -2504,7 +2723,7 @@ function renderTable(rows){
             ){
 
                 tr.style.opacity =
-                    ".54";
+                    ".55";
 
             }
 
@@ -2512,7 +2731,7 @@ function renderTable(rows){
             tr.innerHTML =
             `
 
-                <td class="row-number">
+                <td class="row-index">
                     ${index + 1}
                 </td>
 
@@ -2540,7 +2759,7 @@ function renderTable(rows){
                 </td>
 
 
-                <td class="email-cell">
+                <td class="email">
                     ${escapeHtml(
                         row.buyer_email || "—"
                     )}
@@ -2559,7 +2778,7 @@ function renderTable(rows){
                     <span
                         class="
                             badge
-                            ${status.className}
+                            ${status.cls}
                         "
                     >
                         ${escapeHtml(
@@ -2617,7 +2836,7 @@ function renderTable(rows){
                         <button
                             class="
                                 mini-btn
-                                delete
+                                danger
                             "
                             data-action="delete"
                             data-id="${row.id}"
@@ -2644,10 +2863,225 @@ function renderTable(rows){
 
 
 /* =========================================================
-   SEARCH
+   08. MOBILE CARDS
 ========================================================= */
 
-function filterAndRender(){
+function renderMobile(rows){
+
+    mobileRecords.innerHTML =
+        "";
+
+
+    mobileEmpty.style.display =
+        rows.length
+        ?
+        "none"
+        :
+        "block";
+
+
+    rows.forEach(
+        row => {
+
+
+            const status =
+                getStatus(row);
+
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+
+            card.className =
+                "mobile-card";
+
+
+            if(
+                row.is_deleted ===
+                "已删除"
+            ){
+
+                card.style.opacity =
+                    ".58";
+
+            }
+
+
+            card.innerHTML =
+            `
+
+                <div class="mobile-card-top">
+
+                    <div>
+
+                        <div class="mobile-project">
+                            ${escapeHtml(
+                                row.project_no
+                                ||
+                                "未填写项目号"
+                            )}
+                        </div>
+
+                        <div class="mobile-money">
+                            ${escapeHtml(
+                                formatMoney(
+                                    row.price
+                                )
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <span
+                        class="
+                            badge
+                            ${status.cls}
+                        "
+                    >
+                        ${escapeHtml(
+                            status.text
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="mobile-grid">
+
+
+                    <div>
+
+                        <div class="mobile-info-label">
+                            售卖日期
+                        </div>
+
+                        <div class="mobile-info-value">
+                            ${escapeHtml(
+                                row.sell_date || "—"
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="mobile-info-label">
+                            截止日期
+                        </div>
+
+                        <div class="mobile-info-value">
+                            ${escapeHtml(
+                                row.expire_date || "—"
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="mobile-info-label">
+                            操作人
+                        </div>
+
+                        <div class="mobile-info-value">
+                            ${escapeHtml(
+                                row.operator || "—"
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="mobile-info-label">
+                            买家邮箱
+                        </div>
+
+                        <div class="mobile-info-value">
+                            ${escapeHtml(
+                                row.buyer_email || "—"
+                            )}
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="mobile-actions">
+
+
+                    <button
+                        class="
+                            mini-btn
+                            edit
+                        "
+                        data-action="edit"
+                        data-id="${row.id}"
+                    >
+                        编辑
+                    </button>
+
+
+                    <button
+                        class="mini-btn"
+                        data-action="toggle"
+                        data-id="${row.id}"
+                    >
+
+                        ${
+                            row.is_deleted ===
+                            "已删除"
+
+                            ?
+                            "恢复记录"
+
+                            :
+                            "标记删除"
+                        }
+
+                    </button>
+
+
+                    <button
+                        class="
+                            mini-btn
+                            danger
+                        "
+                        data-action="delete"
+                        data-id="${row.id}"
+                    >
+                        永久删除
+                    </button>
+
+
+                </div>
+
+            `;
+
+
+            mobileRecords.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   09. SEARCH + RENDER
+========================================================= */
+
+function filterRows(){
 
     const keyword =
         searchInput
@@ -2656,63 +3090,60 @@ function filterAndRender(){
         .toLowerCase();
 
 
-    if(!keyword){
+    let rows =
+        allRows;
 
-        renderTable(
-            allRows
-        );
 
-        return;
+    if(keyword){
+
+        rows =
+            allRows.filter(
+                row => {
+
+
+                    const text =
+                        [
+
+                            row.sell_date,
+                            row.expire_date,
+                            row.price,
+                            row.buyer_email,
+                            row.project_no,
+                            row.operator,
+                            row.is_deleted
+
+                        ]
+
+                        .join(" ")
+
+                        .toLowerCase();
+
+
+                    return text.includes(
+                        keyword
+                    );
+
+                }
+            );
 
     }
 
 
-    const rows =
-        allRows.filter(
-            row => {
+    renderDesktop(rows);
 
-
-                const searchable =
-                    [
-
-                        row.sell_date,
-                        row.expire_date,
-                        row.price,
-                        row.buyer_email,
-                        row.project_no,
-                        row.operator,
-                        row.is_deleted
-
-                    ]
-
-                    .join(" ")
-
-                    .toLowerCase();
-
-
-                return searchable.includes(
-                    keyword
-                );
-
-            }
-        );
-
-
-    renderTable(
-        rows
-    );
+    renderMobile(rows);
 
 }
 
 
 searchInput.addEventListener(
     "input",
-    filterAndRender
+    filterRows
 );
 
 
 /* =========================================================
-   CREATE
+   10. CREATE
 ========================================================= */
 
 $("#btnAdd")
@@ -2721,7 +3152,7 @@ $("#btnAdd")
     async () => {
 
 
-        const button =
+        const btn =
             $("#btnAdd");
 
 
@@ -2767,7 +3198,7 @@ $("#btnAdd")
             !payload.project_no
         ){
 
-            showToast(
+            toast(
                 "请先填写销售记录",
                 "error"
             );
@@ -2777,11 +3208,11 @@ $("#btnAdd")
         }
 
 
-        button.disabled =
+        btn.disabled =
             true;
 
 
-        button.textContent =
+        btn.textContent =
             "正在保存…";
 
 
@@ -2799,11 +3230,11 @@ $("#btnAdd")
             ]);
 
 
-        button.disabled =
+        btn.disabled =
             false;
 
 
-        button.textContent =
+        btn.textContent =
             "＋ 新增销售记录";
 
 
@@ -2814,7 +3245,7 @@ $("#btnAdd")
             );
 
 
-            showToast(
+            toast(
                 "新增失败：" +
                 error.message,
                 "error"
@@ -2829,7 +3260,7 @@ $("#btnAdd")
         clearForm();
 
 
-        showToast(
+        toast(
             "销售记录新增成功"
         );
 
@@ -2841,15 +3272,19 @@ $("#btnAdd")
 
 
 /* =========================================================
-   CLEAR
+   11. CLEAR
 ========================================================= */
 
 function clearForm(){
 
     sellDate.value = "";
+
     expireDate.value = "";
+
     price.value = "";
+
     buyerEmail.value = "";
+
     projectNo.value = "";
 
     operator.value =
@@ -2866,69 +3301,93 @@ $("#btnClear")
 
 
 /* =========================================================
-   TABLE ACTIONS
+   12. ACTION DELEGATION
 ========================================================= */
 
-tableBody.addEventListener(
-    "click",
-    async event => {
+function handleActionContainer(
+    container
+){
+
+    container.addEventListener(
+        "click",
+        async event => {
 
 
-        const button =
-            event.target.closest(
-                "button[data-action]"
-            );
+            const btn =
+                event.target.closest(
+                    "[data-action]"
+                );
 
 
-        if(!button)
-            return;
+            if(!btn)
+                return;
 
 
-        const id =
-            Number(
-                button.dataset.id
-            );
+            const id =
+                Number(
+                    btn.dataset.id
+                );
 
 
-        const action =
-            button.dataset.action;
+            const action =
+                btn.dataset.action;
 
 
-        if(action === "edit"){
+            if(
+                action ===
+                "edit"
+            ){
 
-            openEdit(id);
+                openEdit(id);
+
+            }
+
+
+            if(
+                action ===
+                "toggle"
+            ){
+
+                await toggleDeleted(id);
+
+            }
+
+
+            if(
+                action ===
+                "delete"
+            ){
+
+                await permanentDelete(id);
+
+            }
 
         }
+    );
+
+}
 
 
-        if(action === "toggle"){
-
-            await toggleDelete(id);
-
-        }
+handleActionContainer(
+    tableBody
+);
 
 
-        if(action === "delete"){
-
-            await permanentDelete(id);
-
-        }
-
-    }
+handleActionContainer(
+    mobileRecords
 );
 
 
 /* =========================================================
-   SOFT DELETE
+   13. SOFT DELETE
 ========================================================= */
 
-async function toggleDelete(id){
+async function toggleDeleted(id){
 
     const row =
         allRows.find(
             item =>
-                Number(item.id)
-                ===
+                Number(item.id) ===
                 Number(id)
         );
 
@@ -2937,7 +3396,7 @@ async function toggleDelete(id){
         return;
 
 
-    const nextStatus =
+    const next =
         row.is_deleted ===
         "已删除"
 
@@ -2958,8 +3417,7 @@ async function toggleDelete(id){
         )
 
         .update({
-            is_deleted:
-                nextStatus
+            is_deleted:next
         })
 
         .eq(
@@ -2970,7 +3428,7 @@ async function toggleDelete(id){
 
     if(error){
 
-        showToast(
+        toast(
             "更新失败：" +
             error.message,
             "error"
@@ -2981,12 +3439,12 @@ async function toggleDelete(id){
     }
 
 
-    showToast(
-        nextStatus ===
+    toast(
+        next ===
         "已删除"
 
         ?
-        "已标记删除"
+        "记录已标记删除"
 
         :
         "记录已恢复"
@@ -2999,18 +3457,18 @@ async function toggleDelete(id){
 
 
 /* =========================================================
-   PERMANENT DELETE
+   14. PERMANENT DELETE
 ========================================================= */
 
 async function permanentDelete(id){
 
-    const confirmed =
+    const ok =
         confirm(
-            "确定永久删除这条记录吗？\n\n删除后无法恢复。"
+            "确定永久删除这条记录吗？\n\n此操作无法恢复。"
         );
 
 
-    if(!confirmed)
+    if(!ok)
         return;
 
 
@@ -3033,7 +3491,7 @@ async function permanentDelete(id){
 
     if(error){
 
-        showToast(
+        toast(
             "删除失败：" +
             error.message,
             "error"
@@ -3044,7 +3502,7 @@ async function permanentDelete(id){
     }
 
 
-    showToast(
+    toast(
         "记录已永久删除"
     );
 
@@ -3055,7 +3513,7 @@ async function permanentDelete(id){
 
 
 /* =========================================================
-   EDIT
+   15. EDIT
 ========================================================= */
 
 function openEdit(id){
@@ -3063,8 +3521,7 @@ function openEdit(id){
     const row =
         allRows.find(
             item =>
-                Number(item.id)
-                ===
+                Number(item.id) ===
                 Number(id)
         );
 
@@ -3074,7 +3531,7 @@ function openEdit(id){
 
 
     editingId =
-        Number(id);
+        id;
 
 
     $("#editSellDate").value =
@@ -3156,25 +3613,8 @@ $("#editModal")
 );
 
 
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if(
-            event.key ===
-            "Escape"
-        ){
-
-            closeEdit();
-
-        }
-
-    }
-);
-
-
 /* =========================================================
-   SAVE EDIT
+   16. SAVE EDIT
 ========================================================= */
 
 $("#saveEdit")
@@ -3189,32 +3629,29 @@ $("#saveEdit")
             return;
 
 
-        const button =
+        const btn =
             $("#saveEdit");
 
 
-        button.disabled =
+        btn.disabled =
             true;
 
 
-        button.textContent =
+        btn.textContent =
             "正在保存…";
 
 
         const updates = {
 
             sell_date:
-                $("#editSellDate")
-                .value,
+                $("#editSellDate").value,
 
             expire_date:
-                $("#editExpireDate")
-                .value,
+                $("#editExpireDate").value,
 
             price:
                 Number(
-                    $("#editPrice")
-                    .value
+                    $("#editPrice").value
                     ||
                     0
                 ),
@@ -3230,8 +3667,7 @@ $("#saveEdit")
                 .trim(),
 
             operator:
-                $("#editOperator")
-                .value
+                $("#editOperator").value
 
         };
 
@@ -3255,17 +3691,17 @@ $("#saveEdit")
             );
 
 
-        button.disabled =
+        btn.disabled =
             false;
 
 
-        button.textContent =
+        btn.textContent =
             "保存修改";
 
 
         if(error){
 
-            showToast(
+            toast(
                 "保存失败：" +
                 error.message,
                 "error"
@@ -3279,7 +3715,7 @@ $("#saveEdit")
         closeEdit();
 
 
-        showToast(
+        toast(
             "修改已保存"
         );
 
@@ -3291,7 +3727,7 @@ $("#saveEdit")
 
 
 /* =========================================================
-   REFRESH
+   17. REFRESH
 ========================================================= */
 
 $("#btnRefresh")
@@ -3303,7 +3739,7 @@ $("#btnRefresh")
 
 
 /* =========================================================
-   EXPORT CSV
+   18. CSV
 ========================================================= */
 
 $("#btnExport")
@@ -3312,9 +3748,11 @@ $("#btnExport")
     () => {
 
 
-        if(!allRows.length){
+        if(
+            !allRows.length
+        ){
 
-            showToast(
+            toast(
                 "当前没有可以导出的数据",
                 "error"
             );
@@ -3411,30 +3849,28 @@ $("#btnExport")
             );
 
 
-        const anchor =
+        const a =
             document.createElement(
                 "a"
             );
 
 
-        anchor.href =
+        a.href =
             url;
 
 
-        anchor.download =
+        a.download =
             "挣钱上三亚_销售记录.csv";
 
 
         document.body
-        .appendChild(
-            anchor
-        );
+        .appendChild(a);
 
 
-        anchor.click();
+        a.click();
 
 
-        anchor.remove();
+        a.remove();
 
 
         URL.revokeObjectURL(
@@ -3442,7 +3878,7 @@ $("#btnExport")
         );
 
 
-        showToast(
+        toast(
             "CSV 导出完成"
         );
 
@@ -3451,7 +3887,7 @@ $("#btnExport")
 
 
 /* =========================================================
-   INIT
+   19. INIT
 ========================================================= */
 
 $("#year").textContent =
