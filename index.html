@@ -113,7 +113,7 @@ th{background:#dbeafe}
         const {data,error} = await sb
             .from('records')
             .select('*')
-            .order('expireDate', {ascending:true});
+            .order('expire_date', {ascending:true});
         if(error){
             console.error("读取错误",error);
             return;
@@ -129,10 +129,10 @@ th{background:#dbeafe}
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${idx+1}</td>
-                <td>${row.sellDate||''}</td>
-                <td>${row.expireDate||''}</td>
+                <td>${row.sell_date||''}</td>
+                <td>${row.expire_date||''}</td>
                 <td>${row.price||0}</td>
-                <td>${row.buyerEmail||''}</td>
+                <td>${row.buyer_email||''}</td>
                 <td>${row.project_no||''}</td>
                 <td>${row.is_deleted||"未删除"}</td>
                 <td>${row.operator||''}</td>
@@ -167,10 +167,10 @@ th{background:#dbeafe}
     btnAdd.onclick = async function(){
         console.log("点击新增");
         const payload = {
-            sellDate: sellDateEl.value,
-            expireDate: expireDateEl.value,
+            sell_date: sellDateEl.value,
+            expire_date: expireDateEl.value,
             price: Number(priceEl.value||0),
-            buyerEmail: buyerEmailEl.value.trim(),
+            buyer_email: buyerEmailEl.value.trim(),
             project_no: projectNoEl.value.trim(),
             operator: operatorEl.value
         }
