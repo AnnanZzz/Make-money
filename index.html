@@ -10,207 +10,209 @@
 body{
     margin:0;
     min-height:100vh;
-    background:
-        linear-gradient(rgba(255,255,255,.62),rgba(255,255,255,.62)),
-        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center center no-repeat;
-    background-size:cover;
-    background-attachment:fixed;
+    background:#f4f7fa;
 }
-.container{max-width:1100px;margin:20px auto;padding:16px}
-.form-box{background:#ffffffdd;padding:20px;border-radius:10px;margin-bottom:20px}
+.container{max-width:1200px;margin:20px auto;padding:16px}
+.form-box{background:#fff;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 1px 4px #00000015}
 .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .item{display:flex;flex-direction:column;gap:4px}
-input{padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:14px}
+input,select{padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:14px;min-width:140px}
 button{padding:9px 16px;border:none;border-radius:6px;background:#2563eb;color:#fff;cursor:pointer;font-size:14px}
-.btn-del{background:#dc2626}
-.btn-export{background:#059669}
-table{width:100%;border-collapse:collapse;margin-top:10px;background:#ffffffdd}
-th,td{border:1px solid #ddd;padding:10px;text-align:left;font-size:14px}
-th{background:#e2e8f0}
-.expire{background:#ffdddd !important}
-.sum-row td{background:#fef3c7;font-weight:bold;font-size:15px;color:#dc2626}
-.tip-bar{background:#dbeafe;padding:10px;border-radius:8px;margin-bottom:16px;font-size:14px}
-h2{color:#0f766e;margin-top:0}
+button:hover{background:#1d4ed8}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px #00000015}
+th,td{border:1px solid #e5e7eb;padding:9px 10px;font-size:13px}
+th{background:#eff6ff}
+.total-bar{padding:12px;background:#dbeafe;border-radius:8px;margin:10px 0;font-weight:bold}
 </style>
 </head>
 <body>
 <div class="container">
-<h2>挣钱上三亚</h2>
-<div class="tip-bar">难兄难弟→发家致富</div>
-<div class="form-box">
-    <div class="row">
-        <div class="item">
-            <label>售卖日期</label>
-            <input type="date" id="sellDate">
+    <h2>挣钱上三亚</h2>
+    <div class="form-box">
+        <div class="row">
+            <div class="item">
+                <label>售卖日期</label>
+                <input type="date" id="sellDate">
+            </div>
+            <div class="item">
+                <label>截止日期</label>
+                <input type="date" id="expireDate">
+            </div>
+            <div class="item">
+                <label>售卖价格(元)</label>
+                <input type="number" id="price" placeholder="输入金额">
+            </div>
+            <div class="item">
+                <label>买家邮箱</label>
+                <input type="text" id="buyerEmail" placeholder="买家邮箱">
+            </div>
+            <div class="item">
+                <label>项目号</label>
+                <input type="text" id="projectNo" placeholder="项目编号">
+            </div>
+            <div class="item">
+                <label>是否已删除</label>
+                <select id="isDeleted">
+                    <option value="未删除">未删除</option>
+                    <option value="已删除">已删除</option>
+                </select>
+            </div>
+            <div class="item">
+                <label>操作人</label>
+                <select id="operator">
+                    <option value="崔囤月">崔囤月</option>
+                    <option value="刘俊屹">刘俊屹</option>
+                    <option value="曾安南">曾安南</option>
+                </select>
+            </div>
         </div>
-        <div class="item">
-            <label>截止日期</label>
-            <input type="date" id="expireDate">
-        </div>
-        <div class="item">
-            <label>售卖价格</label>
-            <input type="number" id="price" placeholder="元">
-        </div>
-        <div class="item">
-            <label>买家邮箱</label>
-            <input type="email" id="buyerEmail" placeholder="买家邮箱">
+        <div class="row">
+            <button id="btnAdd">新增记录</button>
+            <button id="btnExport">导出备份(CSV)</button>
         </div>
     </div>
-    <div class="row">
-        <button id="btnAdd">新增记录</button>
-        <button id="btnExport" class="btn-export">导出备份(CSV)</button>
-    </div>
-</div>
 
-<table>
-<thead>
-<tr>
-<th style="width:60px">序号</th>
-<th>售卖日期</th>
-<th>截止日期</th>
-<th>售价(元)</th>
-<th>状态</th>
-<th>买家邮箱</th>
-<th>操作</th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
-<tfoot>
-<tr class="sum-row">
-<td colspan="3" style="text-align:right">合计（共<span id="countText">0</span>条）</td>
-<td colspan="4">¥ <span id="sumText">0.00</span></td>
-</tr>
-</tfoot>
-</table>
+    <div class="total-bar" id="totalBar">合计（共0条） ¥0.00</div>
+    <table>
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>售卖日期</th>
+                <th>截止日期</th>
+                <th>售价(元)</th>
+                <th>买家邮箱</th>
+                <th>项目号</th>
+                <th>是否已删除</th>
+                <th>操作人</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
 </div>
 
 <script>
+// ==========这里填你的Supabase信息============
 const SUPABASE_URL = "https://fhbqgieahzkdonknkotg.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_0hgg6udla0_K8P-1pIliCg_pXElMix-";
+// ==========================================
 
-const { createClient } = supabase;
-const sbClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const { createClient } = window.supabase;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let list = [];
 const tableBody = document.getElementById('tableBody');
-const countText = document.getElementById('countText');
-const sumText = document.getElementById('sumText');
+const totalBar = document.getElementById('totalBar');
 
+// dom元素
 const sellDateEl = document.getElementById('sellDate');
 const expireDateEl = document.getElementById('expireDate');
 const priceEl = document.getElementById('price');
 const buyerEmailEl = document.getElementById('buyerEmail');
+const projectNoEl = document.getElementById('projectNo');
+const isDeletedEl = document.getElementById('isDeleted');
+const operatorEl = document.getElementById('operator');
+const btnAdd = document.getElementById('btnAdd');
+const btnExport = document.getElementById('btnExport');
 
-document.getElementById('btnAdd').addEventListener('click',addRecord);
-document.getElementById('btnExport').addEventListener('click',exportExcel);
-
+// 加载数据，按截止日期升序排序
 async function loadData(){
     console.log("开始读取数据");
-    const {data,error}=await sbClient.from('records').select('*').order('id',{asc:true});
+    const {data,error} = await supabase
+        .from('records')
+        .select('*')
+        .order('expireDate', {ascending:true}); //截止日期升序，快到期排上面
+
     if(error){
-        console.error("读取错误：",error);
+        console.error("读取错误",error);
         return;
     }
-    list=data||[];
-    render();
+    renderTable(data);
 }
 
-function render(){
-    tableBody.innerHTML='';
-    const now=new Date();
-    now.setHours(0,0,0,0);
-    let total=0;
-    list.forEach((item,idx)=>{
-        total += Number(item.price||0);
-        const expDate=new Date(item.expiredate);
-        expDate.setHours(0,0,0,0);
-        const isOver=expDate < now;
-        const tr=document.createElement('tr');
-        if(isOver) tr.className='expire';
-        tr.innerHTML=`
+//渲染表格
+function renderTable(list){
+    tableBody.innerHTML = "";
+    let sum = 0;
+    list.forEach((row,idx)=>{
+        sum += Number(row.price||0);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
             <td>${idx+1}</td>
-            <td>${item.selldate||''}</td>
-            <td>${item.expiredate||''}</td>
-            <td>${item.price||0}</td>
-            <td>${isOver?'⚠️已过期':'✅正常'}</td>
-            <td>${item.buyeremail||''}</td>
-            <td><button class="btn-del" data-id="${item.id}">删除</button></td>
+            <td>${row.sellDate||''}</td>
+            <td>${row.expireDate||''}</td>
+            <td>${row.price||0}</td>
+            <td>${row.buyerEmail||''}</td>
+            <td>${row.project_no||''}</td>
+            <td>${row.is_deleted||"未删除"}</td>
+            <td>${row.operator||''}</td>
+            <td>
+                <button data-id="${row.id}" class="delBtn">删除</button>
+            </td>
         `;
         tableBody.appendChild(tr);
     })
-    document.querySelectorAll('.btn-del').forEach(btn=>{
-        btn.onclick=()=>{
-            const id=Number(btn.dataset.id);
-            del(id);
+    totalBar.innerText = `合计（共${list.length}条） ¥${sum.toFixed(2)}`;
+
+    //绑定删除
+    document.querySelectorAll('.delBtn').forEach(btn=>{
+        btn.onclick = async function(){
+            const id = this.dataset.id;
+            await supabase.from('records').delete().eq('id',id);
+            loadData();
         }
     })
-    countText.innerText=list.length;
-    sumText.innerText=total.toFixed(2);
 }
 
-async function addRecord(){
+//新增记录
+btnAdd.onclick = async function(){
     console.log("点击新增，进入函数");
-    const sellDate=sellDateEl.value.trim();
-    const expireDate=expireDateEl.value.trim();
-    const price=priceEl.value;
-    const buyerEmail=buyerEmailEl.value.trim();
-    if(!sellDate||!expireDate){
-        alert('请填写售卖日期与截止日期');
+    const payload = {
+        sellDate: sellDateEl.value,
+        expireDate: expireDateEl.value,
+        price: Number(priceEl.value||0),
+        buyerEmail: buyerEmailEl.value.trim(),
+        project_no: projectNoEl.value.trim(),
+        is_deleted: isDeletedEl.value,
+        operator: operatorEl.value
+    }
+    const {error} = await supabase.from('records').insert([payload]);
+    if(error){
+        console.error("新增错误",error);
+        alert("新增失败:"+JSON.stringify(error));
         return;
     }
-    const payload={
-            selldate:sellDate,
-            expiredate:expireDate,
-            price:Number(price),
-            buyeremail:buyerEmail
-    };
-    console.log("提交数据",payload);
-    const {error}=await sbClient.from('records').insert([payload]);
-    if(error) {
-        console.error("新增错误",error);
-        alert("新增失败："+JSON.stringify(error));
-    }else{
-        alert("新增成功");
-        await loadData(); //新增完成立刻刷新列表
-    }
-    sellDateEl.value='';
-    expireDateEl.value='';
-    priceEl.value='';
-    buyerEmailEl.value='';
+    //清空表单
+    sellDateEl.value = "";
+    expireDateEl.value = "";
+    priceEl.value = "";
+    buyerEmailEl.value = "";
+    projectNoEl.value = "";
+    isDeletedEl.value = "未删除";
+    operatorEl.value = "曾安南";
+    loadData();
 }
 
-async function del(id){
-    if(!confirm('确定删除这条记录吗？'))return;
-    const {error}=await sbClient.from('records').delete().eq('id',id);
-    if(error){
-        console.error("删除错误",error);
-        alert("删除失败");
-    }else{
-        await loadData(); //删除完成立刻刷新列表
-    }
-}
-
-function exportExcel(){
-    if(list.length===0){alert('暂无数据');return;}
-    let csv="序号,售卖日期,截止日期,售价,状态,买家邮箱\n";
-    const now=new Date();now.setHours(0,0,0,0);
-    list.forEach((item,idx)=>{
-        const expDate=new Date(item.expiredate);
-        expDate.setHours(0,0,0,0);
-        const st=expDate<now?"已过期":"正常";
-        csv += `${idx+1},${item.selldate},${item.expiredate},${item.price},${st},"${item.buyeremail||''}"\n`;
+//导出CSV
+btnExport.onclick = function(){
+    const headers = ["序号","售卖日期","截止日期","售价(元)","买家邮箱","项目号","是否已删除","操作人"];
+    let csvContent = headers.join(",") + "\n";
+    const rows = Array.from(tableBody.querySelectorAll('tr'));
+    rows.forEach(tr=>{
+        const tds = Array.from(tr.querySelectorAll('td')).map(td=>'"'+td.innerText+'"');
+        csvContent += tds.join(",") + "\n";
     })
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download="挣钱上三亚统计表.csv";
+    const blob = new Blob([csvContent], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "挣钱上三亚_导出.csv";
     a.click();
 }
 
-(async ()=>{
+window.onload = function(){
     console.log("页面初始化");
-    await loadData();
-})();
+    loadData();
+}
 </script>
 </body>
 </html>
